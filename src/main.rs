@@ -1,3 +1,7 @@
+use bevy::prelude::*;
+
 fn main() {
-    println!("Hello, world!");
+    let mut app = App::build();
+    app.add_plugins(DefaultPlugins)
+        .run();
 }
