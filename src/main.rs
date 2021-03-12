@@ -6,10 +6,11 @@ use bevy::{
 
 fn main() {
     let mut app = App::build();
-    app.add_plugins(DefaultPlugins)
-        .add_resource(ClearColor)
+    app.add_resource(ClearColor)
         .add_startup_system(setup.system())
         .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
+        .add_system(tank_movement.system())
+        .add_plugins(DefaultPlugins)
         .run();
 }
 
@@ -42,3 +43,24 @@ fn spawn_tank(commands: &mut Commands, materials: Res<Materials>) {
         })
         .with(Tank);
 }
+
+fn tank_movement(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut head_positions: Query<&mut Transform, With<Tank>>,
+) {
+    for mut transform in head_positions.iter_mut() {
+        if keyboard_input.pressed(KeyCode::Left) {
+            transform.translation.x -= 2.;
+        }
+        if keyboard_input.pressed(KeyCode::Right) {
+            transform.translation.x += 2.;
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            transform.translation.y -= 2.;
+        }
+        if keyboard_input.pressed(KeyCode::Up) {
+            transform.translation.y += 2.;
+        }
+    }
+}
+
