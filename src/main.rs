@@ -64,3 +64,27 @@ fn tank_movement(
     }
 }
 
+const CELL: u32 = 50; // the smallest block in battle city(unit: px)
+const GAME_WIDTH: u32 = 13 * 2 * CELL;
+const GAME_HEIGHT: u32 = GAME_WIDTH;
+
+#[derive(Default, Copy, Clone, Eq, PartialEq, Hash)]
+struct Position {
+    x: i32,
+    y: i32,
+}
+
+struct Size {
+    width: f32,
+    height: f32,
+}
+
+impl Size {
+    pub fn square(x: f32) -> Self {
+        Self {
+            width: x,
+            height: x,
+        }
+    }
+}
+
