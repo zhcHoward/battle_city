@@ -56,21 +56,23 @@ fn spawn_tank(commands: &mut Commands, materials: Res<Materials>) {
         .with(Position { x: 4, y: 0 });
 }
 
+const BOUNDARY: (u32, u32, u32, u32) = (12, 12, 0, 0); // up, right, down, left
+
 fn tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut tank_positions: Query<&mut Position, With<Tank>>,
 ) {
     for mut pos in tank_positions.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) {
+        if keyboard_input.pressed(KeyCode::Left) && pos.x as u32 > BOUNDARY.3 {
             pos.x -= 1;
         }
-        if keyboard_input.pressed(KeyCode::Right) {
+        if keyboard_input.pressed(KeyCode::Right) && (pos.x as u32) < BOUNDARY.1 {
             pos.x += 1;
         }
-        if keyboard_input.pressed(KeyCode::Down) {
+        if keyboard_input.pressed(KeyCode::Down) && pos.y as u32 > BOUNDARY.2 {
             pos.y -= 1;
         }
-        if keyboard_input.pressed(KeyCode::Up) {
+        if keyboard_input.pressed(KeyCode::Up) && (pos.y as u32) < BOUNDARY.0 {
             pos.y += 1;
         }
     }
