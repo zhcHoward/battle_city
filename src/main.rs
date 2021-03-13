@@ -6,15 +6,24 @@ use bevy::{
 
 fn main() {
     let mut app = App::build();
-    app.add_resource(ClearColor)
-        .add_startup_system(setup.system())
-        .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
-        .add_system(tank_movement.system())
-        .add_plugins(DefaultPlugins)
-        .run();
+    app.add_resource(WindowDescriptor {
+        title: "Snake!".to_string(),
+        width: GAME_WIDTH as f32,
+        height: GAME_HEIGHT as f32,
+        ..Default::default()
+    })
+    .add_resource(ClearColor)
+    .add_startup_system(setup.system())
+    .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
+    .add_system(tank_movement.system())
+    .add_system(position_translation.system())
+    .add_plugins(DefaultPlugins)
+    .run();
 }
 
-struct Tank;
+struct Tank {
+    direction: Direction,
+}
 struct Materials {
     tank: Handle<ColorMaterial>,
 }
@@ -38,34 +47,38 @@ fn spawn_tank(commands: &mut Commands, materials: Res<Materials>) {
     commands
         .spawn(SpriteBundle {
             material: materials.tank.clone(),
-            sprite: Sprite::new(Vec2::new(10.0, 10.0)),
+            sprite: Sprite::new(Vec2::new(FULL_BLOCK as f32, FULL_BLOCK as f32)),
             ..Default::default()
         })
-        .with(Tank);
+        .with(Tank {
+            direction: Direction::Up,
+        })
+        .with(Position { x: 4, y: 0 });
 }
 
 fn tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut head_positions: Query<&mut Transform, With<Tank>>,
+    mut tank_positions: Query<&mut Position, With<Tank>>,
 ) {
-    for mut transform in head_positions.iter_mut() {
+    for mut pos in tank_positions.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
-            transform.translation.x -= 2.;
+            pos.x -= 1;
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            transform.translation.x += 2.;
+            pos.x += 1;
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            transform.translation.y -= 2.;
+            pos.y -= 1;
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            transform.translation.y += 2.;
+            pos.y += 1;
         }
     }
 }
 
-const CELL: u32 = 50; // the smallest block in battle city(unit: px)
-const GAME_WIDTH: u32 = 13 * 2 * CELL;
+const BLOCK: u32 = 20; // the smallest block in battle city(unit: px)
+const FULL_BLOCK: u32 = 2 * BLOCK;
+const GAME_WIDTH: u32 = 13 * 2 * BLOCK;
 const GAME_HEIGHT: u32 = GAME_WIDTH;
 
 #[derive(Default, Copy, Clone, Eq, PartialEq, Hash)]
@@ -88,3 +101,36 @@ impl Size {
     }
 }
 
+#[derive(PartialEq, Copy, Clone)]
+enum Direction {
+    Left,
+    Up,
+    Right,
+    Down,
+}
+
+impl Direction {
+    fn opposite(self) -> Self {
+        match self {
+            Self::Left => Self::Right,
+            Self::Right => Self::Left,
+            Self::Up => Self::Down,
+            Self::Down => Self::Up,
+        }
+    }
+}
+
+fn position_translation(windows: Res<Windows>, mut q: Query<(&Position, &mut Transform)>) {
+    // fn convert(pos: f32, bound_window: f32, bound_game: f32) -> f32 {
+    //     let tile_size = bound_window / bound_game;
+    //     pos / bound_game * bound_window - (bound_window / 2.) + (tile_size / 2.)
+    // }
+    // let window = windows.get_primary().unwrap();
+    for (pos, mut transform) in q.iter_mut() {
+        transform.translation = Vec3::new(
+            ((pos.x - 6) * FULL_BLOCK as i32) as f32,
+            ((pos.y - 6) * FULL_BLOCK as i32) as f32,
+            0.,
+        );
+    }
+}
