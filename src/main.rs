@@ -89,21 +89,23 @@ fn spawn_tank(
         .with(Timer::from_seconds(0.1, true));
 }
 
+const BOUNDARY: f32 = GAME_WIDTH / 2. - BLOCK;
+
 fn tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut tank_positions: Query<&mut Transform, With<Tank>>,
 ) {
     for mut transform in tank_positions.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) {
+        if keyboard_input.pressed(KeyCode::Left) && transform.translation.x > -BOUNDARY {
             transform.translation.x -= TANK_SPEED;
         }
-        if keyboard_input.pressed(KeyCode::Right) {
+        if keyboard_input.pressed(KeyCode::Right) && transform.translation.x < BOUNDARY {
             transform.translation.x += TANK_SPEED;
         }
-        if keyboard_input.pressed(KeyCode::Down) {
+        if keyboard_input.pressed(KeyCode::Down) && transform.translation.y > -BOUNDARY {
             transform.translation.y -= TANK_SPEED;
         }
-        if keyboard_input.pressed(KeyCode::Up) {
+        if keyboard_input.pressed(KeyCode::Up) && transform.translation.y < BOUNDARY {
             transform.translation.y += TANK_SPEED;
         }
     }
