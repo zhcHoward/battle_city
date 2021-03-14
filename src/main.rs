@@ -78,7 +78,7 @@ fn spawn_tank(
             texture_atlas: texture_atlas_handle,
             transform: Transform {
                 translation: TANK1_SPAWN_POSITION,
-                // scale: Vec3::splat(2.),
+                scale: Vec3::splat(SCALE),
                 ..Default::default()
             },
             ..Default::default()
@@ -109,9 +109,10 @@ fn tank_movement(
     }
 }
 
+const SCALE: f32 = 2.;
 const TANK_SPEED: f32 = MIN_BLOCK / 2.;
-const MIN_BLOCK: f32 = 4.;
-const BLOCK: f32 = 2. * MIN_BLOCK; // the smallest block in battle city(unit: px)
+const MIN_BLOCK: f32 = 4. * SCALE; // unit: px
+const BLOCK: f32 = 2. * MIN_BLOCK;
 const MAX_BLOCK: f32 = 2. * BLOCK;
 const GAME_WIDTH: f32 = 13. * MAX_BLOCK;
 const GAME_HEIGHT: f32 = GAME_WIDTH;
