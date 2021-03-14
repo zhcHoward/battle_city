@@ -1,7 +1,8 @@
 use bevy::{
+    math::const_vec3,
+    // sprite::collide_aabb::{collide, Collision},
     prelude::*,
     render::pass::ClearColor,
-    // sprite::collide_aabb::{collide, Collision},
 };
 
 fn main() {
@@ -12,11 +13,10 @@ fn main() {
         height: GAME_HEIGHT as f32,
         ..Default::default()
     })
-    .add_resource(ClearColor(Color::rgb(0., 0., 0.)))
+    .add_resource(ClearColor)
     .add_startup_system(setup.system())
     .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
     .add_system(tank_movement.system())
-    .add_system(position_translation.system())
     .add_system(animate_sprite_system.system())
     .add_plugins(DefaultPlugins)
     .run();
@@ -76,62 +76,45 @@ fn spawn_tank(
     commands
         .spawn(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::splat(2.)),
+            transform: Transform {
+                translation: TANK1_SPAWN_POSITION,
+                // scale: Vec3::splat(2.),
+                ..Default::default()
+            },
             ..Default::default()
         })
         .with(Tank {
             direction: Direction::Up,
         })
-        .with(Position { x: 4, y: 0 })
         .with(Timer::from_seconds(0.1, true));
 }
 
-const BOUNDARY: (u32, u32, u32, u32) = (12, 12, 0, 0); // up, right, down, left
-
 fn tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut tank_positions: Query<&mut Position, With<Tank>>,
+    mut tank_positions: Query<&mut Transform, With<Tank>>,
 ) {
-    for mut pos in tank_positions.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) && pos.x as u32 > BOUNDARY.3 {
-            pos.x -= 1;
+    for mut transform in tank_positions.iter_mut() {
+        if keyboard_input.pressed(KeyCode::Left) {
+            transform.translation.x -= TANK_SPEED;
         }
-        if keyboard_input.pressed(KeyCode::Right) && (pos.x as u32) < BOUNDARY.1 {
-            pos.x += 1;
+        if keyboard_input.pressed(KeyCode::Right) {
+            transform.translation.x += TANK_SPEED;
         }
-        if keyboard_input.pressed(KeyCode::Down) && pos.y as u32 > BOUNDARY.2 {
-            pos.y -= 1;
+        if keyboard_input.pressed(KeyCode::Down) {
+            transform.translation.y -= TANK_SPEED;
         }
-        if keyboard_input.pressed(KeyCode::Up) && (pos.y as u32) < BOUNDARY.0 {
-            pos.y += 1;
-        }
-    }
-}
-
-const BLOCK: u32 = 20; // the smallest block in battle city(unit: px)
-const FULL_BLOCK: u32 = 2 * BLOCK;
-const GAME_WIDTH: u32 = 13 * 2 * BLOCK;
-const GAME_HEIGHT: u32 = GAME_WIDTH;
-
-#[derive(Default, Copy, Clone, Eq, PartialEq, Hash)]
-struct Position {
-    x: i32,
-    y: i32,
-}
-
-struct Size {
-    width: f32,
-    height: f32,
-}
-
-impl Size {
-    pub fn square(x: f32) -> Self {
-        Self {
-            width: x,
-            height: x,
+        if keyboard_input.pressed(KeyCode::Up) {
+            transform.translation.y += TANK_SPEED;
         }
     }
 }
+
+const TANK_SPEED: f32 = MIN_BLOCK / 2.;
+const MIN_BLOCK: f32 = 4.;
+const BLOCK: f32 = 2. * MIN_BLOCK; // the smallest block in battle city(unit: px)
+const MAX_BLOCK: f32 = 2. * BLOCK;
+const GAME_WIDTH: f32 = 13. * MAX_BLOCK;
+const GAME_HEIGHT: f32 = GAME_WIDTH;
 
 #[derive(PartialEq, Copy, Clone)]
 enum Direction {
@@ -151,18 +134,5 @@ impl Direction {
         }
     }
 }
-
-fn position_translation(windows: Res<Windows>, mut q: Query<(&Position, &mut Transform)>) {
-    // fn convert(pos: f32, bound_window: f32, bound_game: f32) -> f32 {
-    //     let tile_size = bound_window / bound_game;
-    //     pos / bound_game * bound_window - (bound_window / 2.) + (tile_size / 2.)
-    // }
-    // let window = windows.get_primary().unwrap();
-    for (pos, mut transform) in q.iter_mut() {
-        transform.translation = Vec3::new(
-            ((pos.x - 6) * FULL_BLOCK as i32) as f32,
-            ((pos.y - 6) * FULL_BLOCK as i32) as f32,
-            0.,
-        );
-    }
-}
+const TANK1_SPAWN_POSITION: Vec3 =
+    const_vec3!([-2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
