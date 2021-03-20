@@ -8,7 +8,7 @@ use bevy::{
 fn main() {
     let mut app = App::build();
     app.add_resource(WindowDescriptor {
-        title: "Snake!".to_string(),
+        title: "Battle City".to_string(),
         width: GAME_WIDTH as f32,
         height: GAME_HEIGHT as f32,
         ..Default::default()
@@ -17,6 +17,7 @@ fn main() {
     .add_startup_system(setup.system())
     .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
     .add_system(tank_movement.system())
+    .add_system(tank_animate_system.system())
     // .add_system(animate_sprite_system.system())
     .add_plugins(DefaultPlugins)
     .run();
@@ -24,9 +25,6 @@ fn main() {
 
 struct Tank {
     direction: Direction,
-}
-struct Materials {
-    tank: Handle<ColorMaterial>,
 }
 
 struct Textures {
@@ -47,15 +45,41 @@ fn setup(
     commands
         // cameras
         .spawn(Camera2dBundle::default())
-        .insert_resource(Materials {
-            tank: materials.add(Color::rgb(0.7, 0.7, 0.7).into()),
-        })
         .insert_resource(Textures {
             texture: texture_handle,
         });
     // .spawn(CameraUiBundle::default());
 }
 
+const DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down];
+
+fn tank_animate_system(
+    time: Res<Time>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<(&mut Timer, &mut TextureAtlasSprite), With<Tank>>,
+) {
+    let mut moving = false;
+    for key in DIRECTION_KEYS.iter() {
+        if keyboard_input.pressed(*key) {
+            moving = true;
+            break;
+        }
+    }
+
+    if !moving {
+        return;
+    }
+
+    for (mut timer, mut sprite) in query.iter_mut() {
+        if timer.tick(time.delta_seconds()).just_finished() {
+            if sprite.index % 2 == 0 {
+                sprite.index += 1;
+            } else {
+                sprite.index -= 1;
+            }
+        }
+    }
+}
 // fn animate_sprite_system(
 //     time: Res<Time>,
 //     texture_atlases: Res<Assets<TextureAtlas>>,
@@ -97,19 +121,23 @@ const BOUNDARY: f32 = GAME_WIDTH / 2. - BLOCK;
 
 fn tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut tank_positions: Query<&mut Transform, With<Tank>>,
+    mut tank_positions: Query<(&mut Transform, &mut TextureAtlasSprite), With<Tank>>,
 ) {
-    for mut transform in tank_positions.iter_mut() {
+    for (mut transform, mut sprite) in tank_positions.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) && transform.translation.x > -BOUNDARY {
+            sprite.index = 2;
             transform.translation.x -= TANK_SPEED;
         }
         if keyboard_input.pressed(KeyCode::Right) && transform.translation.x < BOUNDARY {
+            sprite.index = 6;
             transform.translation.x += TANK_SPEED;
         }
         if keyboard_input.pressed(KeyCode::Down) && transform.translation.y > -BOUNDARY {
+            sprite.index = 4;
             transform.translation.y -= TANK_SPEED;
         }
         if keyboard_input.pressed(KeyCode::Up) && transform.translation.y < BOUNDARY {
+            sprite.index = 0;
             transform.translation.y += TANK_SPEED;
         }
     }
