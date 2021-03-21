@@ -3,15 +3,17 @@ use bevy::{
     // sprite::collide_aabb::{collide, Collision},
     prelude::*,
     render::pass::ClearColor,
-    sprite,
 };
+
+mod texture;
+use texture::{load_texture_atlas, Textures};
 
 fn main() {
     let mut app = App::build();
     app.add_resource(WindowDescriptor {
         title: "Battle City".to_string(),
-        width: GAME_WIDTH as f32,
-        height: GAME_HEIGHT as f32,
+        width: GAME_WIDTH,
+        height: GAME_HEIGHT,
         ..Default::default()
     })
     .add_resource(ClearColor)
@@ -34,30 +36,6 @@ struct Tank {
     owner: Owner,
 }
 
-struct Textures {
-    texture: Handle<TextureAtlas>,
-}
-
-fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
-    let texture_handle = asset_server.load("General Sprites.png");
-    let mut sprites = Vec::with_capacity(256);
-    // load tank with different color in order: yellow, white, green, red
-    for y in 0..16 {
-        for x in 0..16 {
-            sprites.push(sprite::Rect {
-                min: Vec2::new((x * 16) as f32, (y * 16) as f32),
-                max: Vec2::new(((x + 1) * 16) as f32, ((y + 1) * 16) as f32),
-            });
-        }
-    }
-    TextureAtlas {
-        size: Vec2::new(400., 256.), // the size of General Sprites.png instead of the size of tank area
-        textures: sprites,
-        texture: texture_handle,
-        texture_handles: None,
-    }
-}
-
 fn setup(
     commands: &mut Commands,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
@@ -68,10 +46,10 @@ fn setup(
     commands
         // cameras
         .spawn(Camera2dBundle::default())
+        // .spawn(CameraUiBundle::default())
         .insert_resource(Textures {
             texture: texture_handle,
         });
-    // .spawn(CameraUiBundle::default());
 }
 
 const P1_DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::A, KeyCode::D, KeyCode::W, KeyCode::S];
@@ -136,7 +114,7 @@ fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
     // spawn P1's tank
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(0), // P2
+            sprite: TextureAtlasSprite::new(0),
             texture_atlas: textures.texture.clone(),
             transform: Transform {
                 translation: TANK1_SPAWN_POSITION,
@@ -151,9 +129,10 @@ fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
         })
         .with(Timer::from_seconds(0.1, true));
 
+    // spawn P2's tank
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(128), // P2
+            sprite: TextureAtlasSprite::new(128),
             texture_atlas: textures.texture.clone(),
             transform: Transform {
                 translation: TANK2_SPAWN_POSITION,
