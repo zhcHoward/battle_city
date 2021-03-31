@@ -55,38 +55,53 @@ fn setup(
 
     // spawn boundaries
     let boundary_material = materials.add(Color::default().into());
-    let wall_thickness = 10.0;
-    let bounds = Vec2::new(900.0, 600.0);
+    let wall_thickness = 1.;
     commands
         // left
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(-GAME_WIDTH / 2. - 5., 0., 0.)),
-            sprite: Sprite::new(Vec2::new(wall_thickness, GAME_HEIGHT + wall_thickness)),
+            transform: Transform::from_translation(Vec3::new(
+                -GAME_WIDTH / 2. - wall_thickness,
+                0.,
+                0.,
+            )),
+            sprite: Sprite::new(Vec2::new(wall_thickness, GAME_HEIGHT)),
             ..Default::default()
         })
         .with(Collider::Boundary)
         // right
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(GAME_WIDTH / 2. + 5., 0., 0.)),
-            sprite: Sprite::new(Vec2::new(wall_thickness, GAME_HEIGHT + wall_thickness)),
+            transform: Transform::from_translation(Vec3::new(
+                GAME_WIDTH / 2. + wall_thickness,
+                0.,
+                0.,
+            )),
+            sprite: Sprite::new(Vec2::new(wall_thickness, GAME_HEIGHT)),
             ..Default::default()
         })
         .with(Collider::Boundary)
         // top
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(0., GAME_HEIGHT / 2. + 5., 0.)),
-            sprite: Sprite::new(Vec2::new(GAME_WIDTH + wall_thickness, wall_thickness)),
+            transform: Transform::from_translation(Vec3::new(
+                0.,
+                GAME_HEIGHT / 2. + wall_thickness,
+                0.,
+            )),
+            sprite: Sprite::new(Vec2::new(GAME_WIDTH, wall_thickness)),
             ..Default::default()
         })
         .with(Collider::Boundary)
         // bottom
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(0., -GAME_HEIGHT / 2. - 5., 0.)),
-            sprite: Sprite::new(Vec2::new(GAME_WIDTH + wall_thickness, wall_thickness)),
+            transform: Transform::from_translation(Vec3::new(
+                0.,
+                -GAME_HEIGHT / 2. - wall_thickness,
+                0.,
+            )),
+            sprite: Sprite::new(Vec2::new(GAME_WIDTH, wall_thickness)),
             ..Default::default()
         })
         .with(Collider::Boundary);
@@ -195,6 +210,7 @@ const BOUNDARY: f32 = GAME_WIDTH / 2. - BLOCK;
 fn player_tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut tank_positions: Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank)>,
+    collision_query: Query<(&Collider, &Transform, &Sprite)>,
 ) {
     for (mut transform, mut sprite, mut tank) in tank_positions.iter_mut() {
         match tank.owner {
