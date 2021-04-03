@@ -1,11 +1,13 @@
-use bevy::{
-    math::const_vec3,
-    prelude::*,
-    render::pass::ClearColor,
-    sprite::collide_aabb::{collide, Collision},
-};
+use bevy::{prelude::*, render::pass::ClearColor};
 
+mod tank;
 mod texture;
+use tank::{
+    spawn_p1, spawn_p2, Direction, Owner, Tank, BLOCK, GAME_HEIGHT, GAME_WIDTH, MAX_BLOCK,
+    P1_DIRECTION_KEYS, P2_DIRECTION_KEYS, TANK_SPEED,
+};
+mod collision;
+use collision::{collide, Collider};
 use texture::{load_texture_atlas, Textures};
 
 fn main() {
@@ -21,20 +23,8 @@ fn main() {
     .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
     .add_system(player_tank_movement.system())
     .add_system(tank_animate_system.system())
-    .add_system(tank_collision_system.system())
     .add_plugins(DefaultPlugins)
     .run();
-}
-
-enum Owner {
-    Player1,
-    Player2,
-    AI,
-}
-
-struct Tank {
-    direction: Direction,
-    owner: Owner,
 }
 
 fn setup(
@@ -61,7 +51,7 @@ fn setup(
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(
-                -GAME_WIDTH / 2. - wall_thickness,
+                -GAME_WIDTH / 2. - wall_thickness / 2.,
                 0.,
                 0.,
             )),
@@ -73,7 +63,7 @@ fn setup(
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(
-                GAME_WIDTH / 2. + wall_thickness,
+                GAME_WIDTH / 2. + wall_thickness / 2.,
                 0.,
                 0.,
             )),
@@ -86,7 +76,7 @@ fn setup(
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(
                 0.,
-                GAME_HEIGHT / 2. + wall_thickness,
+                GAME_HEIGHT / 2. + wall_thickness / 2.,
                 0.,
             )),
             sprite: Sprite::new(Vec2::new(GAME_WIDTH, wall_thickness)),
@@ -98,7 +88,7 @@ fn setup(
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(
                 0.,
-                -GAME_HEIGHT / 2. - wall_thickness,
+                -GAME_HEIGHT / 2. - wall_thickness / 2.,
                 0.,
             )),
             sprite: Sprite::new(Vec2::new(GAME_WIDTH, wall_thickness)),
@@ -106,9 +96,6 @@ fn setup(
         })
         .with(Collider::Boundary);
 }
-
-const P1_DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::A, KeyCode::D, KeyCode::W, KeyCode::S];
-const P2_DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down];
 
 fn tank_animate_system(
     time: Res<Time>,
@@ -166,43 +153,8 @@ fn tank_animate_system(
 }
 
 fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
-    // spawn P1's tank
-    commands
-        .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(0),
-            texture_atlas: textures.texture.clone(),
-            transform: Transform {
-                translation: TANK1_SPAWN_POSITION,
-                scale: Vec3::splat(SCALE),
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .with(Tank {
-            direction: Direction::Up,
-            owner: Owner::Player1,
-        })
-        .with(Collider::Tank)
-        .with(Timer::from_seconds(0.1, true));
-
-    // spawn P2's tank
-    commands
-        .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(128),
-            texture_atlas: textures.texture.clone(),
-            transform: Transform {
-                translation: TANK2_SPAWN_POSITION,
-                scale: Vec3::splat(SCALE),
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .with(Tank {
-            direction: Direction::Up,
-            owner: Owner::Player2,
-        })
-        .with(Collider::Tank)
-        .with(Timer::from_seconds(0.1, true));
+    spawn_p1(commands, textures.texture.clone());
+    spawn_p2(commands, textures.texture.clone());
 }
 
 const BOUNDARY: f32 = GAME_WIDTH / 2. - BLOCK;
@@ -212,7 +164,10 @@ fn player_tank_movement(
     mut tank_positions: Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank)>,
     collision_query: Query<(&Collider, &Transform, &Sprite)>,
 ) {
+    let mut min_distance;
+    let mut stop;
     for (mut transform, mut sprite, mut tank) in tank_positions.iter_mut() {
+        min_distance = GAME_HEIGHT; // a large float number
         match tank.owner {
             Owner::Player1 => {
                 if keyboard_input.pressed(KeyCode::A) {
@@ -252,16 +207,47 @@ fn player_tank_movement(
                     }
                 }
                 if keyboard_input.pressed(KeyCode::W) {
-                    // if tank.direction == Direction::Up {
-                    //     if transform.translation.y < BOUNDARY {
-                    transform.translation.y += TANK_SPEED;
-                    //     }
-                    // } else {
-                    if keyboard_input.just_pressed(KeyCode::W) {
-                        sprite.index = 0;
-                        tank.direction = Direction::Up;
+                    stop = false;
+                    if tank.direction == Direction::Up {
+                        for (collider, c_transform, c_sprit) in collision_query.iter() {
+                            match collider {
+                                Collider::Grass | Collider::Snow => continue,
+                                _ => {
+                                    match collide(
+                                        transform.translation,
+                                        Vec2::new(MAX_BLOCK, MAX_BLOCK),
+                                        c_transform.translation,
+                                        c_sprit.size,
+                                        Direction::Up,
+                                    ) {
+                                        None => continue,
+                                        Some(distance) => {
+                                            if distance <= 0. {
+                                                stop = true;
+                                                break;
+                                            }
+                                            if distance < min_distance {
+                                                min_distance = distance;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if stop {
+                            continue;
+                        }
+                        if min_distance >= TANK_SPEED {
+                            transform.translation.y += TANK_SPEED;
+                        } else {
+                            transform.translation.y += min_distance;
+                        }
+                    } else {
+                        if keyboard_input.just_pressed(KeyCode::W) {
+                            sprite.index = 0;
+                            tank.direction = Direction::Up;
+                        }
                     }
-                    // }
                 }
             }
             Owner::Player2 => {
@@ -315,71 +301,6 @@ fn player_tank_movement(
                 }
             }
             Owner::AI => (),
-        }
-    }
-}
-
-const SCALE: f32 = 2.;
-const TANK_SPEED: f32 = MIN_BLOCK / 2.;
-const MIN_BLOCK: f32 = 4. * SCALE; // unit: px
-const BLOCK: f32 = 2. * MIN_BLOCK;
-const MAX_BLOCK: f32 = 2. * BLOCK; // tank's size
-const GAME_WIDTH: f32 = 13. * MAX_BLOCK;
-const GAME_HEIGHT: f32 = GAME_WIDTH;
-
-#[derive(PartialEq, Copy, Clone)]
-enum Direction {
-    Left,
-    Up,
-    Right,
-    Down,
-}
-
-impl Direction {
-    fn opposite(self) -> Self {
-        match self {
-            Self::Left => Self::Right,
-            Self::Right => Self::Left,
-            Self::Up => Self::Down,
-            Self::Down => Self::Up,
-        }
-    }
-}
-const TANK1_SPAWN_POSITION: Vec3 =
-    const_vec3!([-2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
-const TANK2_SPAWN_POSITION: Vec3 = const_vec3!([2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
-
-enum Collider {
-    Boundary, // boundary of battle field
-    Brick,
-    Iron,
-    River,
-    Grass,
-    Snow,
-    Base, // The eagle
-    Tank,
-    Bullet,
-}
-
-fn tank_collision_system(
-    mut tank_query: Query<&mut Transform, With<Tank>>,
-    collider_query: Query<(&Collider, &Transform, &Sprite)>,
-) {
-    for mut tank_transform in tank_query.iter_mut() {
-        for (collider, transform, sprite) in collider_query.iter() {
-            let collision = collide(
-                tank_transform.translation,
-                Vec2::new(16., 16.),
-                transform.translation,
-                sprite.size,
-            );
-
-            if let Some(collision) = collision {
-                println!("in collision: {:?}", collision);
-                if let Collider::Boundary = *collider {
-                    tank_transform.translation.y = BOUNDARY;
-                }
-            }
         }
     }
 }
