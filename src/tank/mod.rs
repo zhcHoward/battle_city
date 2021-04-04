@@ -11,7 +11,7 @@ pub struct Tank {
     pub owner: Owner,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum Direction {
     Left,
     Up,

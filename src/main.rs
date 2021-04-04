@@ -165,139 +165,175 @@ fn player_tank_movement(
     collision_query: Query<(&Collider, &Transform, &Sprite)>,
 ) {
     let mut min_distance;
-    let mut stop;
-    for (mut transform, mut sprite, mut tank) in tank_positions.iter_mut() {
+    let mut move_distance;
+    'tank: for (mut transform, mut sprite, mut tank) in tank_positions.iter_mut() {
         min_distance = GAME_HEIGHT; // a large float number
         match tank.owner {
             Owner::Player1 => {
-                if keyboard_input.pressed(KeyCode::A) {
-                    if tank.direction == Direction::Left {
-                        if transform.translation.x > -BOUNDARY {
-                            transform.translation.x -= TANK_SPEED;
+                if keyboard_input.just_pressed(KeyCode::W) && tank.direction != Direction::Up {
+                    sprite.index = 0;
+                    tank.direction = Direction::Up;
+                    continue;
+                }
+                if keyboard_input.just_pressed(KeyCode::D) && tank.direction != Direction::Right {
+                    sprite.index = 6;
+                    tank.direction = Direction::Right;
+                    continue;
+                }
+                if keyboard_input.just_pressed(KeyCode::S) && tank.direction != Direction::Down {
+                    sprite.index = 4;
+                    tank.direction = Direction::Down;
+                    continue;
+                }
+                if keyboard_input.just_pressed(KeyCode::A) && tank.direction != Direction::Left {
+                    sprite.index = 2;
+                    tank.direction = Direction::Left;
+                    continue;
+                }
+
+                match tank.direction {
+                    Direction::Up => {
+                        if !keyboard_input.pressed(KeyCode::W) {
+                            continue;
                         }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::A) {
-                            sprite.index = 2;
-                            tank.direction = Direction::Left;
+                    }
+                    Direction::Right => {
+                        if !keyboard_input.pressed(KeyCode::D) {
+                            continue;
+                        }
+                    }
+                    Direction::Down => {
+                        if !keyboard_input.pressed(KeyCode::S) {
+                            continue;
+                        }
+                    }
+                    Direction::Left => {
+                        if !keyboard_input.pressed(KeyCode::A) {
+                            continue;
                         }
                     }
                 }
-                if keyboard_input.pressed(KeyCode::D) {
-                    if tank.direction == Direction::Right {
-                        if transform.translation.x < BOUNDARY {
-                            transform.translation.x += TANK_SPEED;
-                        }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::D) {
-                            sprite.index = 6;
-                            tank.direction = Direction::Right;
-                        }
-                    }
-                }
-                if keyboard_input.pressed(KeyCode::S) {
-                    if tank.direction == Direction::Down {
-                        if transform.translation.y > -BOUNDARY {
-                            transform.translation.y -= TANK_SPEED;
-                        }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::S) {
-                            sprite.index = 4;
-                            tank.direction = Direction::Down;
-                        }
-                    }
-                }
-                if keyboard_input.pressed(KeyCode::W) {
-                    stop = false;
-                    if tank.direction == Direction::Up {
-                        for (collider, c_transform, c_sprit) in collision_query.iter() {
-                            match collider {
-                                Collider::Grass | Collider::Snow => continue,
-                                _ => {
-                                    match collide(
-                                        transform.translation,
-                                        Vec2::new(MAX_BLOCK, MAX_BLOCK),
-                                        c_transform.translation,
-                                        c_sprit.size,
-                                        Direction::Up,
-                                    ) {
-                                        None => continue,
-                                        Some(distance) => {
-                                            if distance <= 0. {
-                                                stop = true;
-                                                break;
-                                            }
-                                            if distance < min_distance {
-                                                min_distance = distance;
-                                            }
-                                        }
+
+                for (collider, c_transform, c_sprit) in collision_query.iter() {
+                    match collider {
+                        Collider::Grass | Collider::Snow => continue,
+                        _ => {
+                            match collide(
+                                transform.translation,
+                                Vec2::new(MAX_BLOCK, MAX_BLOCK),
+                                c_transform.translation,
+                                c_sprit.size,
+                                &tank.direction,
+                            ) {
+                                None => continue,
+                                Some(distance) => {
+                                    if distance <= 0. {
+                                        // tank is at the edge of an obstacle, shall not move forward
+                                        continue 'tank;
+                                    }
+                                    if distance < min_distance {
+                                        min_distance = distance;
                                     }
                                 }
                             }
                         }
-                        if stop {
-                            continue;
-                        }
-                        if min_distance >= TANK_SPEED {
-                            transform.translation.y += TANK_SPEED;
-                        } else {
-                            transform.translation.y += min_distance;
-                        }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::W) {
-                            sprite.index = 0;
-                            tank.direction = Direction::Up;
-                        }
                     }
+                }
+
+                move_distance = if min_distance >= TANK_SPEED {
+                    TANK_SPEED
+                } else {
+                    min_distance
+                };
+                match tank.direction {
+                    Direction::Up => transform.translation.y += move_distance,
+                    Direction::Right => transform.translation.x += move_distance,
+                    Direction::Down => transform.translation.y -= move_distance,
+                    Direction::Left => transform.translation.x -= move_distance,
                 }
             }
             Owner::Player2 => {
-                if keyboard_input.pressed(KeyCode::Left) {
-                    if tank.direction == Direction::Left {
-                        if transform.translation.x > -BOUNDARY {
-                            transform.translation.x -= TANK_SPEED;
+                if keyboard_input.just_pressed(KeyCode::Up) && tank.direction != Direction::Up {
+                    sprite.index = 128;
+                    tank.direction = Direction::Up;
+                    continue;
+                }
+                if keyboard_input.just_pressed(KeyCode::Right) && tank.direction != Direction::Right
+                {
+                    sprite.index = 134;
+                    tank.direction = Direction::Right;
+                    continue;
+                }
+                if keyboard_input.just_pressed(KeyCode::Down) && tank.direction != Direction::Down {
+                    sprite.index = 132;
+                    tank.direction = Direction::Down;
+                    continue;
+                }
+                if keyboard_input.just_pressed(KeyCode::Left) && tank.direction != Direction::Left {
+                    sprite.index = 130;
+                    tank.direction = Direction::Left;
+                    continue;
+                }
+
+                match tank.direction {
+                    Direction::Up => {
+                        if !keyboard_input.pressed(KeyCode::Up) {
+                            continue;
                         }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::Left) {
-                            sprite.index = 130;
-                            tank.direction = Direction::Left;
+                    }
+                    Direction::Right => {
+                        if !keyboard_input.pressed(KeyCode::Right) {
+                            continue;
+                        }
+                    }
+                    Direction::Down => {
+                        if !keyboard_input.pressed(KeyCode::Down) {
+                            continue;
+                        }
+                    }
+                    Direction::Left => {
+                        if !keyboard_input.pressed(KeyCode::Left) {
+                            continue;
                         }
                     }
                 }
-                if keyboard_input.pressed(KeyCode::Right) {
-                    if tank.direction == Direction::Right {
-                        if transform.translation.x < BOUNDARY {
-                            transform.translation.x += TANK_SPEED;
-                        }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::Right) {
-                            sprite.index = 134;
-                            tank.direction = Direction::Right;
+
+                for (collider, c_transform, c_sprit) in collision_query.iter() {
+                    match collider {
+                        Collider::Grass | Collider::Snow => continue,
+                        _ => {
+                            match collide(
+                                transform.translation,
+                                Vec2::new(MAX_BLOCK, MAX_BLOCK),
+                                c_transform.translation,
+                                c_sprit.size,
+                                &tank.direction,
+                            ) {
+                                None => continue,
+                                Some(distance) => {
+                                    if distance <= 0. {
+                                        // tank is at the edge of an obstacle, shall not move forward
+                                        continue 'tank;
+                                    }
+                                    if distance < min_distance {
+                                        min_distance = distance;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                if keyboard_input.pressed(KeyCode::Down) {
-                    if tank.direction == Direction::Down {
-                        if transform.translation.y > -BOUNDARY {
-                            transform.translation.y -= TANK_SPEED;
-                        }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::Down) {
-                            sprite.index = 132;
-                            tank.direction = Direction::Down;
-                        }
-                    }
-                }
-                if keyboard_input.pressed(KeyCode::Up) {
-                    if tank.direction == Direction::Up {
-                        if transform.translation.y < BOUNDARY {
-                            transform.translation.y += TANK_SPEED;
-                        }
-                    } else {
-                        if keyboard_input.just_pressed(KeyCode::Up) {
-                            sprite.index = 128;
-                            tank.direction = Direction::Up;
-                        }
-                    }
+
+                move_distance = if min_distance >= TANK_SPEED {
+                    TANK_SPEED
+                } else {
+                    min_distance
+                };
+                match tank.direction {
+                    Direction::Up => transform.translation.y += move_distance,
+                    Direction::Right => transform.translation.x += move_distance,
+                    Direction::Down => transform.translation.y -= move_distance,
+                    Direction::Left => transform.translation.x -= move_distance,
                 }
             }
             Owner::AI => (),
