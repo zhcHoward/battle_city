@@ -1,17 +1,6 @@
-mod player_tank;
-pub use player_tank::{spawn_p1, spawn_p2, P1_DIRECTION_KEYS, P2_DIRECTION_KEYS};
-
-#[derive(Debug, PartialEq)]
-pub enum Owner {
-    Player1,
-    Player2,
-    AI,
-}
-
-pub struct Tank {
-    pub direction: Direction,
-    pub owner: Owner,
-}
+pub mod p1;
+pub mod p2;
+use bevy::math::{const_vec2, Vec2};
 
 #[derive(PartialEq, Debug)]
 pub enum Direction {
@@ -28,3 +17,4 @@ pub const BLOCK: f32 = 2. * MIN_BLOCK;
 pub const MAX_BLOCK: f32 = 2. * BLOCK; // tank's size
 pub const GAME_WIDTH: f32 = 13. * MAX_BLOCK;
 pub const GAME_HEIGHT: f32 = GAME_WIDTH;
+pub const TANK_SIZE: Vec2 = const_vec2!([MAX_BLOCK, MAX_BLOCK]);
