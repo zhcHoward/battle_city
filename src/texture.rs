@@ -81,19 +81,19 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     // sprite index 273 ~ 276
     sprites.push(Rect {
         min: Vec2::new(323., 102.),
-        max: Vec2::new(326., 106.),
+        max: Vec2::new(327., 106.),
     });
     sprites.push(Rect {
-        min: Vec2::new(330., 102.),
+        min: Vec2::new(330., 101.),
         max: Vec2::new(334., 105.),
     });
     sprites.push(Rect {
-        min: Vec2::new(339., 102.),
+        min: Vec2::new(338., 102.),
         max: Vec2::new(342., 106.),
     });
     sprites.push(Rect {
         min: Vec2::new(346., 102.),
-        max: Vec2::new(350., 105.),
+        max: Vec2::new(350., 106.),
     });
 
     // load power ups
@@ -124,7 +124,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     }
 
     TextureAtlas {
-        size: Vec2::new(400., 256.), // the size of General Sprites.png instead of the size of tank area
+        size: Vec2::new(400., 256.),
         textures: sprites,
         texture: texture_handle,
         texture_handles: None,

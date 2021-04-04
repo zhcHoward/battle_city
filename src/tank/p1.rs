@@ -1,6 +1,8 @@
 use crate::{
+    bullet,
     collision::{collide, Collider},
     tank::{Direction, GAME_WIDTH, MAX_BLOCK, SCALE, TANK_SIZE, TANK_SPEED},
+    texture::Textures,
 };
 use bevy::{math::const_vec3, prelude::*};
 pub struct P1 {
@@ -114,7 +116,7 @@ pub fn movement(
         let mut size;
         for (collider, transform, sprite) in obstacles.iter() {
             match collider {
-                Collider::Grass | Collider::Snow => continue,
+                Collider::Grass | Collider::Snow | Collider::Bullet => continue,
                 Collider::Tank => {
                     size = TANK_SIZE;
                 }
@@ -145,16 +147,25 @@ pub fn movement(
                 }
             }
         }
-        move_distance = if min_distance >= TANK_SPEED {
-            TANK_SPEED
-        } else {
-            min_distance
-        };
+        move_distance = min_distance.min(TANK_SPEED);
         match tank.direction {
             Direction::Up => tank_transform.translation.y += move_distance,
             Direction::Right => tank_transform.translation.x += move_distance,
             Direction::Down => tank_transform.translation.y -= move_distance,
             Direction::Left => tank_transform.translation.x -= move_distance,
         }
+    }
+}
+
+pub fn firing(
+    commands: &mut Commands,
+    keyboard_input: Res<Input<KeyCode>>,
+    textures: Res<Textures>,
+    p1: Query<(&Transform, &P1)>,
+) {
+    let (transform, tank) = p1.iter().next().unwrap();
+    if keyboard_input.just_pressed(KeyCode::J) {
+        let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
+        bullet::spawn(commands, textures, bullet_pos, &tank.direction)
     }
 }

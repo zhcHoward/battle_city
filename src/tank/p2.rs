@@ -114,7 +114,7 @@ pub fn movement(
         let mut size;
         for (collider, transform, sprite) in obstacles.iter() {
             match collider {
-                Collider::Grass | Collider::Snow => continue,
+                Collider::Grass | Collider::Snow | Collider::Bullet => continue,
                 Collider::Tank => {
                     size = TANK_SIZE;
                 }
@@ -145,11 +145,7 @@ pub fn movement(
                 }
             }
         }
-        move_distance = if min_distance >= TANK_SPEED {
-            TANK_SPEED
-        } else {
-            min_distance
-        };
+        move_distance = min_distance.min(TANK_SPEED);
         match tank.direction {
             Direction::Up => tank_transform.translation.y += move_distance,
             Direction::Right => tank_transform.translation.x += move_distance,

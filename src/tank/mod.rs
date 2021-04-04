@@ -2,7 +2,7 @@ pub mod p1;
 pub mod p2;
 use bevy::math::{const_vec2, Vec2};
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub enum Direction {
     Left,
     Up,

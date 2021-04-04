@@ -1,5 +1,6 @@
 use bevy::{prelude::*, render::pass::ClearColor};
 
+mod bullet;
 mod collision;
 mod tank;
 mod texture;
@@ -22,6 +23,8 @@ fn main() {
     .add_system(p2::movement.system())
     .add_system(p1::animation.system())
     .add_system(p2::animation.system())
+    .add_system(p1::firing.system())
+    .add_system(bullet::movement.system())
     .add_plugins(DefaultPlugins)
     .run();
 }
