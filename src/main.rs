@@ -157,16 +157,17 @@ fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
     spawn_p2(commands, textures.texture.clone());
 }
 
-const BOUNDARY: f32 = GAME_WIDTH / 2. - BLOCK;
-
 fn player_tank_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut tank_positions: Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank)>,
-    collision_query: Query<(&Collider, &Transform, &Sprite)>,
+    tank_query: QuerySet<(
+        Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank)>,
+        Query<(&Collider, &Transform, Option<&Sprite>, Option<&Tank>)>,
+    )>,
 ) {
     let mut min_distance;
     let mut move_distance;
-    'tank: for (mut transform, mut sprite, mut tank) in tank_positions.iter_mut() {
+    let mut size;
+    'tank: for (mut transform, mut sprite, mut tank) in unsafe { tank_query.q0().iter_unsafe() } {
         min_distance = GAME_HEIGHT; // a large float number
         match tank.owner {
             Owner::Player1 => {
@@ -214,15 +215,25 @@ fn player_tank_movement(
                     }
                 }
 
-                for (collider, c_transform, c_sprit) in collision_query.iter() {
+                for (collider, c_transform, c_sprit, c_tank) in tank_query.q1().iter() {
                     match collider {
                         Collider::Grass | Collider::Snow => continue,
                         _ => {
+                            match (c_sprit, c_tank) {
+                                (Some(sprite), None) => size = sprite.size,
+                                (None, Some(tank)) => {
+                                    if tank.owner == Owner::Player1 {
+                                        continue;
+                                    }
+                                    size = Vec2::new(MAX_BLOCK, MAX_BLOCK);
+                                }
+                                _ => continue,
+                            }
                             match collide(
                                 transform.translation,
                                 Vec2::new(MAX_BLOCK, MAX_BLOCK),
                                 c_transform.translation,
-                                c_sprit.size,
+                                size,
                                 &tank.direction,
                             ) {
                                 None => continue,
@@ -298,15 +309,25 @@ fn player_tank_movement(
                     }
                 }
 
-                for (collider, c_transform, c_sprit) in collision_query.iter() {
+                for (collider, c_transform, c_sprit, c_tank) in tank_query.q1().iter() {
                     match collider {
                         Collider::Grass | Collider::Snow => continue,
                         _ => {
+                            match (c_sprit, c_tank) {
+                                (Some(sprite), None) => size = sprite.size,
+                                (None, Some(tank)) => {
+                                    if tank.owner == Owner::Player2 {
+                                        continue;
+                                    }
+                                    size = Vec2::new(MAX_BLOCK, MAX_BLOCK);
+                                }
+                                _ => continue,
+                            }
                             match collide(
                                 transform.translation,
                                 Vec2::new(MAX_BLOCK, MAX_BLOCK),
                                 c_transform.translation,
-                                c_sprit.size,
+                                size,
                                 &tank.direction,
                             ) {
                                 None => continue,

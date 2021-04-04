@@ -1,5 +1,7 @@
 mod player_tank;
 pub use player_tank::{spawn_p1, spawn_p2, P1_DIRECTION_KEYS, P2_DIRECTION_KEYS};
+
+#[derive(Debug, PartialEq)]
 pub enum Owner {
     Player1,
     Player2,
