@@ -2,12 +2,11 @@ pub mod p1;
 pub mod p2;
 use bevy::math::{const_vec2, Vec2};
 
-#[derive(PartialEq, Debug, Copy, Clone)]
-pub enum Direction {
-    Left,
-    Up,
-    Right,
-    Down,
+use crate::utils::{Direction, Owner};
+
+pub struct Tank {
+    direction: Direction,
+    owner: Owner,
 }
 
 pub const SCALE: f32 = 2.;

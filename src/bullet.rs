@@ -2,8 +2,9 @@ use bevy::prelude::*;
 
 use crate::{
     collision::Collider,
-    tank::{Direction, SCALE},
+    tank::SCALE,
     texture::Textures,
+    utils::{Direction, Owner},
 };
 
 const BULLET_POS: f32 = 10. * SCALE;

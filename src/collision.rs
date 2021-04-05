@@ -1,4 +1,4 @@
-use crate::tank::Direction;
+use crate::utils::Direction;
 use bevy::math::{Vec2, Vec3};
 
 #[derive(Debug)]

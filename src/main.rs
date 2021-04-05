@@ -4,6 +4,7 @@ mod bullet;
 mod collision;
 mod tank;
 mod texture;
+mod utils;
 use collision::Collider;
 use tank::{p1, p2, GAME_HEIGHT, GAME_WIDTH};
 use texture::{load_texture_atlas, Textures};
@@ -23,7 +24,7 @@ fn main() {
     .add_system(p2::movement.system())
     .add_system(p1::animation.system())
     .add_system(p2::animation.system())
-    .add_system(p1::firing.system())
+    // .add_system(p1::firing.system())
     .add_system(bullet::movement.system())
     .add_plugins(DefaultPlugins)
     .run();
