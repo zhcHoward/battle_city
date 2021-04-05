@@ -156,15 +156,15 @@ pub fn movement(
     }
 }
 
-// pub fn firing(
-//     commands: &mut Commands,
-//     keyboard_input: Res<Input<KeyCode>>,
-//     textures: Res<Textures>,
-//     p1: Query<(&Transform, &P1)>,
-// ) {
-//     let (transform, tank) = p1.iter().next().unwrap();
-//     if keyboard_input.just_pressed(KeyCode::J) {
-//         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
-//         bullet::spawn(commands, textures, bullet_pos, &tank.direction)
-//     }
-// }
+pub fn firing(
+    commands: &mut Commands,
+    keyboard_input: Res<Input<KeyCode>>,
+    textures: Res<Textures>,
+    p1: Query<(&Transform, &Tank), With<P1>>,
+) {
+    let (transform, tank) = p1.iter().next().unwrap();
+    if keyboard_input.just_pressed(KeyCode::J) {
+        let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
+        bullet::spawn(commands, textures, bullet_pos, &tank.direction)
+    }
+}
