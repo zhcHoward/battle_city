@@ -26,6 +26,7 @@ fn main() {
     .add_system(p2::animation.system())
     .add_system(p1::firing.system())
     .add_system(bullet::movement.system())
+    .add_system(bullet::collision.system())
     .add_plugins(DefaultPlugins)
     .run();
 }
@@ -48,7 +49,7 @@ fn setup(
 
     // spawn boundaries
     let boundary_material = materials.add(Color::default().into());
-    let wall_thickness = 1.;
+    let wall_thickness = 10.;
     commands
         // left
         .spawn(SpriteBundle {

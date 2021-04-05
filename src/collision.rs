@@ -1,4 +1,4 @@
-use crate::utils::Direction;
+use crate::{bullet::BULLET_SIZE, tank::TANK_SIZE, utils::Direction};
 use bevy::math::{Vec2, Vec3};
 
 #[derive(Debug)]

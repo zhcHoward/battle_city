@@ -5,8 +5,8 @@ use bevy::math::{const_vec2, Vec2};
 use crate::utils::{Direction, Owner};
 
 pub struct Tank {
-    direction: Direction,
-    owner: Owner,
+    pub direction: Direction,
+    pub owner: Owner,
 }
 
 pub const SCALE: f32 = 2.;

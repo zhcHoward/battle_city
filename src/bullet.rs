@@ -1,15 +1,17 @@
-use bevy::prelude::*;
+use bevy::{math::const_vec2, prelude::*, sprite::collide_aabb::collide};
 
 use crate::{
     collision::Collider,
-    tank::SCALE,
+    tank::{Tank, SCALE, TANK_SIZE},
     texture::Textures,
     utils::{Direction, Owner, AI, P1, P2},
 };
 
 const BULLET_POS: f32 = 10. * SCALE;
 const BULLET_SPEED: f32 = 2. * SCALE;
+pub const BULLET_SIZE: Vec2 = const_vec2!([4. * SCALE, 4. * SCALE]);
 
+#[derive(Debug)]
 pub struct Bullet {
     pub direction: Direction,
     pub speed: f32,
@@ -65,6 +67,7 @@ pub fn spawn(
     };
 }
 
+// Movement system
 pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform, &Bullet)>) {
     for (mut timer, mut transform, bullet) in bullets.iter_mut() {
         if timer.tick(time.delta_seconds()).just_finished() {
@@ -74,6 +77,101 @@ pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform,
                 Direction::Down => Vec3::unit_y() * -bullet.speed,
                 Direction::Left => Vec3::unit_x() * -bullet.speed,
             };
+        }
+    }
+}
+
+// Collision system
+pub fn collision(
+    commands: &mut Commands,
+    bullets: Query<(Entity, &Transform, &Bullet)>,
+    colliders: Query<(
+        Entity,
+        &Collider,
+        &Transform,
+        Option<&Sprite>,
+        Option<&Tank>,
+        Option<&Bullet>,
+    )>,
+) {
+    let mut size;
+    for (b_entity, b_transform, bullet) in bullets.iter() {
+        for (c_entity, collider, c_transform, sprite, tank, c_bullet) in colliders.iter() {
+            if b_entity == c_entity {
+                continue;
+            }
+            size = match collider {
+                Collider::Tank | Collider::Base => TANK_SIZE,
+                Collider::Bullet => BULLET_SIZE,
+                Collider::Boundary => sprite.unwrap().size,
+                _ => TANK_SIZE / 2.,
+            };
+            let collision = collide(
+                b_transform.translation,
+                BULLET_SIZE,
+                c_transform.translation,
+                size,
+            );
+            if collision.is_none() {
+                continue;
+            }
+            match collider {
+                Collider::Grass => {
+                    // TODO: tanks with enough power ups can remove grass, e.g. 4 stars
+                }
+                Collider::Brick => {}
+                Collider::Iron => {}
+                Collider::River | Collider::Snow => continue,
+                Collider::Boundary => {
+                    commands.despawn(b_entity);
+                }
+                Collider::Base => {
+                    commands.despawn(b_entity);
+                    // TODO: Game Over
+                }
+                Collider::Bullet => {
+                    let c_bullet = c_bullet.unwrap();
+                    if c_bullet.source == bullet.source {
+                        continue;
+                    }
+                    commands.despawn(b_entity);
+                    commands.despawn(c_entity);
+                }
+                Collider::Tank => {
+                    let tank = tank.unwrap();
+                    match tank.owner {
+                        Owner::P1 => match bullet.source {
+                            Owner::P1 => continue,
+                            Owner::P2 => {
+                                commands.despawn(b_entity);
+                                // TODO: freeze P1 for some seconds
+                            }
+                            Owner::AI => {
+                                commands.despawn(b_entity);
+                                // TODO: destory enemy tank
+                            }
+                        },
+                        Owner::P2 => match bullet.source {
+                            Owner::P1 => {
+                                commands.despawn(b_entity);
+                                // TODO: freeze P2 for some seconds
+                            }
+                            Owner::P2 => continue,
+                            Owner::AI => {
+                                commands.despawn(b_entity);
+                                // TODO: destory enemy tank
+                            }
+                        },
+                        Owner::AI => match bullet.source {
+                            Owner::P1 | Owner::P2 => {
+                                commands.despawn(b_entity);
+                                // TODO: destory player's tank
+                            }
+                            Owner::AI => continue, // go through it
+                        },
+                    }
+                }
+            }
         }
     }
 }
