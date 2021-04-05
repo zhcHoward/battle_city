@@ -6,7 +6,7 @@ mod tank;
 mod texture;
 mod utils;
 use collision::Collider;
-use tank::{p1, p2, GAME_HEIGHT, GAME_WIDTH};
+use tank::{ai, p1, p2, GAME_HEIGHT, GAME_WIDTH};
 use texture::{load_texture_atlas, Textures};
 
 fn main() {
@@ -102,6 +102,24 @@ fn setup(
 }
 
 fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
-    p1::spawn_tank(commands, textures.texture.clone());
-    p2::spawn_tank(commands, textures.texture.clone());
+    p1::spawn(commands, textures.texture.clone());
+    p2::spawn(commands, textures.texture.clone());
+    ai::spawn(
+        commands,
+        textures.texture.clone(),
+        ai::SPAWN_POSITION1,
+        ai::TankType::Light,
+    );
+    ai::spawn(
+        commands,
+        textures.texture.clone(),
+        ai::SPAWN_POSITION2,
+        ai::TankType::Medium,
+    );
+    ai::spawn(
+        commands,
+        textures.texture.clone(),
+        ai::SPAWN_POSITION3,
+        ai::TankType::Heavy,
+    );
 }

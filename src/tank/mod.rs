@@ -1,3 +1,4 @@
+pub mod ai;
 pub mod p1;
 pub mod p2;
 use bevy::math::{const_vec2, Vec2};

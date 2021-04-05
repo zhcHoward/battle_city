@@ -10,7 +10,7 @@ use bevy::{math::const_vec3, prelude::*};
 pub const DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::W, KeyCode::D, KeyCode::S, KeyCode::A];
 const SPAWN_POSITION: Vec3 = const_vec3!([-2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
 
-pub fn spawn_tank(commands: &mut Commands, texture: Handle<TextureAtlas>) {
+pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
         .spawn(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(0),
