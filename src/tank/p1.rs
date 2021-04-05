@@ -165,6 +165,6 @@ pub fn firing(
     let (transform, tank) = p1.iter().next().unwrap();
     if keyboard_input.just_pressed(KeyCode::J) {
         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
-        bullet::spawn(commands, textures, bullet_pos, &tank.direction)
+        bullet::spawn(commands, textures, bullet_pos, &tank.direction, Owner::P1)
     }
 }

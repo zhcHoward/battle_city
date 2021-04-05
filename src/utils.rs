@@ -6,7 +6,7 @@ pub enum Direction {
     Down,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Owner {
     P1,
     P2,

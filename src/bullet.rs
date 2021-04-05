@@ -4,15 +4,16 @@ use crate::{
     collision::Collider,
     tank::SCALE,
     texture::Textures,
-    utils::{Direction, Owner},
+    utils::{Direction, Owner, AI, P1, P2},
 };
 
 const BULLET_POS: f32 = 10. * SCALE;
-const BULLET_SPEED: f32 = 1. * SCALE;
+const BULLET_SPEED: f32 = 2. * SCALE;
 
 pub struct Bullet {
     pub direction: Direction,
     pub speed: f32,
+    pub source: Owner,
 }
 
 pub fn cal_position(tank_pos: &Vec3, direction: &Direction) -> Vec3 {
@@ -29,6 +30,7 @@ pub fn spawn(
     textures: Res<Textures>,
     position: Vec3,
     direction: &Direction,
+    source: Owner,
 ) {
     let sprite_index = match direction {
         Direction::Up => 273,
@@ -50,9 +52,17 @@ pub fn spawn(
         .with(Bullet {
             direction: *direction,
             speed: BULLET_SPEED,
+            source: source.clone(),
         })
         .with(Collider::Bullet)
-        .with(Timer::from_seconds(0.05, true));
+        .with(Timer::from_seconds(0.025, true));
+
+    // add additional mark for the bullet, makes querying for bullet easier
+    match source {
+        Owner::P1 => commands.with(P1),
+        Owner::P2 => commands.with(P2),
+        Owner::AI => commands.with(AI),
+    };
 }
 
 pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform, &Bullet)>) {
