@@ -7,7 +7,7 @@ use bevy::{math::const_vec3, prelude::*};
 
 pub const DIRECTION_KEYS: [KeyCode; 4] =
     [KeyCode::Up, KeyCode::Right, KeyCode::Down, KeyCode::Left];
-const SPAWN_POSITION: Vec3 = const_vec3!([2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
+pub const SPAWN_POSITION: Vec3 = const_vec3!([2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
 
 pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
@@ -35,8 +35,11 @@ pub fn animation(
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &Tank), With<P2>>,
 ) {
-    let (mut timer, mut sprite, tank) =
-        query.iter_mut().next().expect("P2 not found for animation");
+    let result = query.iter_mut().next();
+    if result.is_none() {
+        return;
+    }
+    let (mut timer, mut sprite, tank) = result.unwrap();
     let moving = match tank.direction {
         Direction::Up => keyboard_input.pressed(DIRECTION_KEYS[0]),
         Direction::Right => keyboard_input.pressed(DIRECTION_KEYS[1]),
@@ -63,10 +66,11 @@ pub fn movement(
     mut tank: Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank), With<P2>>,
     obstacles: Query<(&Collider, &Transform, Option<&Sprite>), Without<P2>>,
 ) {
-    let move_distance;
-    let (mut t_transform, mut t_sprite, mut tank) =
-        tank.iter_mut().next().expect("P2 not found for movement");
-
+    let result = tank.iter_mut().next();
+    if result.is_none() {
+        return;
+    }
+    let (mut t_transform, mut t_sprite, mut tank) = result.unwrap();
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
         t_sprite.index = 128;
         tank.direction = Direction::Up;
@@ -146,7 +150,7 @@ pub fn movement(
             }
         }
     }
-    move_distance = min_distance.min(TANK_SPEED);
+    let move_distance = min_distance.min(TANK_SPEED);
     match tank.direction {
         Direction::Up => t_transform.translation.y += move_distance,
         Direction::Right => t_transform.translation.x += move_distance,

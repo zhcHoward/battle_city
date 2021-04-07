@@ -17,6 +17,7 @@ pub const SPAWN_POSITION3: Vec3 = const_vec3!([
     0.
 ]);
 
+#[derive(Debug, Clone, Copy)]
 pub enum TankType {
     Normal,
     Light,

@@ -3,6 +3,7 @@ use bevy::{prelude::*, render::pass::ClearColor};
 mod bullet;
 mod collision;
 mod explosion;
+mod star;
 mod tank;
 mod texture;
 mod utils;
@@ -21,6 +22,7 @@ fn main() {
     .add_resource(ClearColor)
     .add_startup_system(setup.system())
     .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
+    .add_system(star::twinkling.system())
     .add_system(p1::movement.system())
     .add_system(p2::movement.system())
     .add_system(p1::animation.system())
@@ -104,24 +106,39 @@ fn setup(
 }
 
 fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
-    p1::spawn(commands, textures.texture.clone());
-    p2::spawn(commands, textures.texture.clone());
-    ai::spawn(
+    star::spawn(
+        commands,
+        textures.texture.clone(),
+        p1::SPAWN_POSITION,
+        utils::Owner::P1,
+        None,
+    );
+    star::spawn(
+        commands,
+        textures.texture.clone(),
+        p2::SPAWN_POSITION,
+        utils::Owner::P2,
+        None,
+    );
+    star::spawn(
         commands,
         textures.texture.clone(),
         ai::SPAWN_POSITION1,
-        ai::TankType::Light,
+        utils::Owner::AI,
+        Some(ai::TankType::Light),
     );
-    ai::spawn(
+    star::spawn(
         commands,
         textures.texture.clone(),
         ai::SPAWN_POSITION2,
-        ai::TankType::Medium,
+        utils::Owner::AI,
+        Some(ai::TankType::Medium),
     );
-    ai::spawn(
+    star::spawn(
         commands,
         textures.texture.clone(),
         ai::SPAWN_POSITION3,
-        ai::TankType::Heavy,
+        utils::Owner::AI,
+        Some(ai::TankType::Heavy),
     );
 }
