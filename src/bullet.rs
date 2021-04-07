@@ -2,7 +2,8 @@ use bevy::{math::const_vec2, prelude::*, sprite::collide_aabb::collide};
 
 use crate::{
     collision::Collider,
-    tank::{Tank, SCALE, TANK_SIZE},
+    explosion,
+    tank::{Tank, BLOCK, SCALE, TANK_SIZE},
     texture::Textures,
     utils::{Direction, Owner, AI, P1, P2},
 };
@@ -84,6 +85,7 @@ pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform,
 // Collision system
 pub fn collision(
     commands: &mut Commands,
+    textures: Res<Textures>,
     bullets: Query<(Entity, &Transform, &Bullet)>,
     colliders: Query<(
         Entity,
@@ -124,6 +126,13 @@ pub fn collision(
                 Collider::River | Collider::Snow => continue,
                 Collider::Boundary => {
                     commands.despawn(b_entity);
+                    let pos = match bullet.direction {
+                        Direction::Up => Vec3::new(b_transform.translation.x, 12. * BLOCK, 0.),
+                        Direction::Right => Vec3::new(12. * BLOCK, b_transform.translation.y, 0.),
+                        Direction::Down => Vec3::new(b_transform.translation.x, -12. * BLOCK, 0.),
+                        Direction::Left => Vec3::new(-12. * BLOCK, b_transform.translation.y, 0.),
+                    };
+                    explosion::spawn(commands, textures.texture.clone(), pos);
                 }
                 Collider::Base => {
                     commands.despawn(b_entity);
