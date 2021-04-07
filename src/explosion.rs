@@ -2,9 +2,11 @@ use bevy::prelude::*;
 
 use crate::tank::SCALE;
 
-pub struct Explosion;
+pub struct Explosion {
+    is_big: bool,
+}
 
-pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>, position: Vec3) {
+pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>, position: Vec3, is_big: bool) {
     commands
         .spawn(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(284),
@@ -16,19 +18,26 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>, position: V
             },
             ..Default::default()
         })
-        .with(Explosion)
+        .with(Explosion { is_big })
         .with(Timer::from_seconds(0.1, true));
 }
 
 pub fn explode(
     time: Res<Time>,
     commands: &mut Commands,
-    mut explosions: Query<(&mut Timer, &mut TextureAtlasSprite, Entity), With<Explosion>>,
+    mut explosions: Query<(&mut Timer, &mut TextureAtlasSprite, Entity, &Explosion)>,
 ) {
-    for (mut timer, mut sprite, entity) in explosions.iter_mut() {
+    for (mut timer, mut sprite, entity, explosion) in explosions.iter_mut() {
         if timer.tick(time.delta_seconds()).just_finished() {
             match sprite.index {
                 286 => {
+                    if explosion.is_big {
+                        sprite.index += 1;
+                    } else {
+                        commands.despawn(entity);
+                    }
+                }
+                288 => {
                     commands.despawn(entity);
                 }
                 _ => sprite.index += 1,

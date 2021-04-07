@@ -114,6 +114,17 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
         })
     }
 
+    // load 2 large explosion (32 x 32)
+    // sprite index 287 ~ 288
+    sprites.push(Rect {
+        min: Vec2::new(304., 128.),
+        max: Vec2::new(336., 160.),
+    });
+    sprites.push(Rect {
+        min: Vec2::new(336., 128.),
+        max: Vec2::new(368., 160.),
+    });
+
     // load tank shield
     // sprite index 287 ~ 288
     for i in 0..2 {

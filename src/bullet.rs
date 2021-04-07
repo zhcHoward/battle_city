@@ -132,7 +132,7 @@ pub fn collision(
                         Direction::Down => Vec3::new(b_transform.translation.x, -12. * BLOCK, 0.),
                         Direction::Left => Vec3::new(-12. * BLOCK, b_transform.translation.y, 0.),
                     };
-                    explosion::spawn(commands, textures.texture.clone(), pos);
+                    explosion::spawn(commands, textures.texture.clone(), pos, false);
                 }
                 Collider::Base => {
                     commands.despawn(b_entity);
@@ -148,35 +148,45 @@ pub fn collision(
                 }
                 Collider::Tank => {
                     let tank = tank.unwrap();
-                    match tank.owner {
-                        Owner::P1 => match bullet.source {
+                    match bullet.source {
+                        Owner::P1 => match tank.owner {
                             Owner::P1 => continue,
                             Owner::P2 => {
                                 commands.despawn(b_entity);
-                                // TODO: freeze P1 for some seconds
+                                // TODO: freeze P2 for some seconds
                             }
                             Owner::AI => {
-                                commands.despawn(b_entity);
-                                // TODO: destory enemy tank
+                                commands.despawn(b_entity).despawn(c_entity);
+                                explosion::spawn(
+                                    commands,
+                                    textures.texture.clone(),
+                                    c_transform.translation,
+                                    true,
+                                );
                             }
                         },
-                        Owner::P2 => match bullet.source {
+                        Owner::P2 => match tank.owner {
                             Owner::P1 => {
                                 commands.despawn(b_entity);
-                                // TODO: freeze P2 for some seconds
+                                // TODO: freeze P1 for some seconds
                             }
                             Owner::P2 => continue,
                             Owner::AI => {
-                                commands.despawn(b_entity);
-                                // TODO: destory enemy tank
+                                commands.despawn(b_entity).despawn(c_entity);
+                                explosion::spawn(
+                                    commands,
+                                    textures.texture.clone(),
+                                    c_transform.translation,
+                                    true,
+                                );
                             }
                         },
-                        Owner::AI => match bullet.source {
+                        Owner::AI => match tank.owner {
                             Owner::P1 | Owner::P2 => {
                                 commands.despawn(b_entity);
-                                // TODO: destory player's tank
+                                // TODO: destroy players' tank
                             }
-                            Owner::AI => continue, // go through it
+                            Owner::AI => continue,
                         },
                     }
                 }
