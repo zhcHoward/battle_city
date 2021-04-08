@@ -3,7 +3,7 @@ use bevy::{math::const_vec2, prelude::*, sprite::collide_aabb::collide};
 use crate::{
     collision::Collider,
     explosion,
-    tank::{Tank, BLOCK, SCALE, TANK_SIZE},
+    tank::{Tank, BLOCK, GAME_HEIGHT, GAME_WIDTH, SCALE, TANK_SIZE},
     texture::Textures,
     utils::{Direction, Owner, AI, P1, P2},
 };
@@ -58,7 +58,7 @@ pub fn spawn(
             source: source.clone(),
         })
         .with(Collider::Bullet)
-        .with(Timer::from_seconds(0.025, true));
+        .with(Timer::from_seconds(0.1, true));
 
     // add additional mark for the bullet, makes querying for bullet easier
     match source {
@@ -127,10 +127,16 @@ pub fn collision(
                 Collider::Boundary => {
                     commands.despawn(b_entity);
                     let pos = match bullet.direction {
-                        Direction::Up => Vec3::new(b_transform.translation.x, 12. * BLOCK, 0.),
-                        Direction::Right => Vec3::new(12. * BLOCK, b_transform.translation.y, 0.),
-                        Direction::Down => Vec3::new(b_transform.translation.x, -12. * BLOCK, 0.),
-                        Direction::Left => Vec3::new(-12. * BLOCK, b_transform.translation.y, 0.),
+                        Direction::Up => Vec3::new(b_transform.translation.x, GAME_HEIGHT / 2., 0.),
+                        Direction::Right => {
+                            Vec3::new(GAME_WIDTH / 2., b_transform.translation.y, 0.)
+                        }
+                        Direction::Down => {
+                            Vec3::new(b_transform.translation.x, GAME_HEIGHT / -2., 0.)
+                        }
+                        Direction::Left => {
+                            Vec3::new(GAME_WIDTH / -2., b_transform.translation.y, 0.)
+                        }
                     };
                     explosion::spawn(commands, textures.texture.clone(), pos, false);
                 }
@@ -143,8 +149,7 @@ pub fn collision(
                     if c_bullet.source == bullet.source {
                         continue;
                     }
-                    commands.despawn(b_entity);
-                    commands.despawn(c_entity);
+                    commands.despawn(b_entity).despawn(c_entity);
                 }
                 Collider::Tank => {
                     let tank = tank.unwrap();
