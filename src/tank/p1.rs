@@ -28,7 +28,7 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
         })
         .with(P1)
         .with(Collider::Tank)
-        .with(Timer::from_seconds(0.1, true));
+        .with(Timer::from_seconds(0.01, true));
 }
 
 /// Animation systems
@@ -53,7 +53,7 @@ pub fn animation(
         return;
     }
 
-    if timer.tick(time.delta_seconds()).just_finished() {
+    if timer.tick(time.delta_seconds() / 5.).just_finished() {
         if sprite.index % 2 == 0 {
             sprite.index += 1;
         } else {
@@ -64,15 +64,25 @@ pub fn animation(
 
 /// Movement system
 pub fn movement(
+    time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut tank: Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank), With<P1>>,
+    mut tank: Query<
+        (
+            &mut Transform,
+            &mut TextureAtlasSprite,
+            &mut Tank,
+            &mut Timer,
+        ),
+        With<P1>,
+    >,
     obstacles: Query<(&Collider, &Transform, Option<&Sprite>), Without<P1>>,
 ) {
     let result = tank.iter_mut().next();
     if result.is_none() {
         return;
     }
-    let (mut t_transform, mut t_sprite, mut tank) = result.unwrap();
+    let (mut t_transform, mut t_sprite, mut tank, mut timer) = result.unwrap();
+
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
         t_sprite.index = 0;
         tank.direction = Direction::Up;
@@ -153,11 +163,13 @@ pub fn movement(
         }
     }
     let move_distance = min_distance.min(TANK_SPEED);
-    match tank.direction {
-        Direction::Up => t_transform.translation.y += move_distance,
-        Direction::Right => t_transform.translation.x += move_distance,
-        Direction::Down => t_transform.translation.y -= move_distance,
-        Direction::Left => t_transform.translation.x -= move_distance,
+    if timer.tick(time.delta_seconds()).just_finished() {
+        match tank.direction {
+            Direction::Up => t_transform.translation.y += move_distance,
+            Direction::Right => t_transform.translation.x += move_distance,
+            Direction::Down => t_transform.translation.y -= move_distance,
+            Direction::Left => t_transform.translation.x -= move_distance,
+        }
     }
 }
 

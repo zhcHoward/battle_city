@@ -11,7 +11,7 @@ pub struct Tank {
 }
 
 pub const SCALE: f32 = 2.;
-pub const TANK_SPEED: f32 = MIN_BLOCK / 2.;
+pub const TANK_SPEED: f32 = MIN_BLOCK / 4.;
 pub const MIN_BLOCK: f32 = 4. * SCALE; // unit: px
 pub const BLOCK: f32 = 2. * MIN_BLOCK;
 pub const MAX_BLOCK: f32 = 2. * BLOCK; // tank's size
