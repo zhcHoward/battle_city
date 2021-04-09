@@ -58,7 +58,7 @@ pub fn spawn(
             source: source.clone(),
         })
         .with(Collider::Bullet)
-        .with(Timer::from_seconds(0.1, true));
+        .with(Timer::from_seconds(0.02, true));
 
     // add additional mark for the bullet, makes querying for bullet easier
     match source {
