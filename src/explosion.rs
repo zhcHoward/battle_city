@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::tank::SCALE;
+use crate::consts::SCALE;
 
 pub struct Explosion {
     is_big: bool,

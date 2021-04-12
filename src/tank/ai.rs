@@ -1,19 +1,20 @@
 use crate::{
     collision::{collide, Collider},
-    tank::{Tank, GAME_WIDTH, MAX_BLOCK, SCALE, TANK_SIZE, TANK_SPEED},
+    consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
+    tank::{Tank, TANK_SIZE, TANK_SPEED},
     utils::{Direction, Owner, P2},
 };
 use bevy::{math::const_vec3, prelude::*};
 
 pub const SPAWN_POSITION1: Vec3 = const_vec3!([
-    (MAX_BLOCK - GAME_WIDTH) / 2.,
-    (GAME_WIDTH - MAX_BLOCK) / 2.,
+    (BLOCK_WIDTH - BATTLE_FIELD_WIDTH) / 2.,
+    (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2.,
     0.
 ]);
-pub const SPAWN_POSITION2: Vec3 = const_vec3!([0., (GAME_WIDTH - MAX_BLOCK) / 2., 0.]);
+pub const SPAWN_POSITION2: Vec3 = const_vec3!([0., (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2., 0.]);
 pub const SPAWN_POSITION3: Vec3 = const_vec3!([
-    (GAME_WIDTH - MAX_BLOCK) / 2.,
-    (GAME_WIDTH - MAX_BLOCK) / 2.,
+    (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2.,
+    (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2.,
     0.
 ]);
 

@@ -2,24 +2,26 @@ use bevy::{prelude::*, render::pass::ClearColor};
 
 mod bullet;
 mod collision;
+mod consts;
 mod explosion;
 mod star;
 mod tank;
 mod texture;
 mod utils;
 use collision::Collider;
-use tank::{ai, p1, p2, GAME_HEIGHT, GAME_WIDTH};
+use consts::{BATTLE_FIELD_WIDTH, MIN_BLOCK_WIDTH, SCALE, WINDOW_HEIGHT, WINDOW_WIDTH};
+use tank::{ai, p1, p2};
 use texture::{load_texture_atlas, Textures};
 
 fn main() {
     let mut app = App::build();
     app.add_resource(WindowDescriptor {
         title: "Battle City".to_string(),
-        width: GAME_WIDTH + 100.,
-        height: GAME_HEIGHT + 100.,
+        width: WINDOW_WIDTH,
+        height: WINDOW_HEIGHT,
         ..Default::default()
     })
-    .add_resource(ClearColor)
+    .add_resource(ClearColor(Color::BLACK))
     .add_startup_system(setup.system())
     .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
     .add_system(star::twinkling.system())
@@ -52,54 +54,38 @@ fn setup(
         });
 
     // spawn boundaries
-    let boundary_material = materials.add(Color::default().into());
-    let wall_thickness = 10.;
+    let boundary_material = materials.add(Color::GRAY.into());
+    // let wall_thickness = 10.;
     commands
         // left
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(
-                -GAME_WIDTH / 2. - wall_thickness / 2.,
-                0.,
-                0.,
-            )),
-            sprite: Sprite::new(Vec2::new(wall_thickness, GAME_HEIGHT)),
+            transform: Transform::from_translation(Vec3::new(-120. * SCALE, 0., 0.)),
+            sprite: Sprite::new(Vec2::new(16. * SCALE, WINDOW_HEIGHT)),
             ..Default::default()
         })
         .with(Collider::Boundary)
         // right
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(
-                GAME_WIDTH / 2. + wall_thickness / 2.,
-                0.,
-                0.,
-            )),
-            sprite: Sprite::new(Vec2::new(wall_thickness, GAME_HEIGHT)),
+            transform: Transform::from_translation(Vec3::new(112. * SCALE, 0., 0.)),
+            sprite: Sprite::new(Vec2::new(32. * SCALE, WINDOW_HEIGHT)),
             ..Default::default()
         })
         .with(Collider::Boundary)
         // top
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(
-                0.,
-                GAME_HEIGHT / 2. + wall_thickness / 2.,
-                0.,
-            )),
-            sprite: Sprite::new(Vec2::new(GAME_WIDTH, wall_thickness)),
+            transform: Transform::from_translation(Vec3::new(-MIN_BLOCK_WIDTH, 108. * SCALE, 0.)),
+            sprite: Sprite::new(Vec2::new(BATTLE_FIELD_WIDTH, 8. * SCALE)),
             ..Default::default()
         })
         .with(Collider::Boundary)
         // bottom
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(
-                0.,
-                -GAME_HEIGHT / 2. - wall_thickness / 2.,
-                0.,
-            )),
-            sprite: Sprite::new(Vec2::new(GAME_WIDTH, wall_thickness)),
+            transform: Transform::from_translation(Vec3::new(-MIN_BLOCK_WIDTH, -108. * SCALE, 0.)),
+            sprite: Sprite::new(Vec2::new(BATTLE_FIELD_WIDTH, 8. * SCALE)),
             ..Default::default()
         })
         .with(Collider::Boundary);

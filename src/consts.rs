@@ -1,3 +1,12 @@
-const BLOCK_WIDTH: f32 = 8.; // the smallest block in battle city(unit: px)
-const MAX_BLOCK_WIDTH: f32 = 2. * BLOCK;
-const BATTLE_FIELD_WIDTH: f32 = 13. * MAX_BLOCK_WIDTH;
+pub const SCALE: f32 = 2.;
+pub const BASE_MIN_BLOCK_WIDTH: f32 = 8.; // 8px
+pub const BASE_BLOCK_WIDTH: f32 = BASE_MIN_BLOCK_WIDTH * 2.; // 16px
+pub const BASE_BATTLE_FIELD_WIDTH: f32 = BASE_BLOCK_WIDTH * 13.; // 208px
+pub const BASE_WINDOW_WIDTH: f32 = BASE_BLOCK_WIDTH * 16.; // 256px
+pub const BASE_WINDOW_HEIGHT: f32 = BASE_BLOCK_WIDTH * 14.; // 224px
+
+pub const MIN_BLOCK_WIDTH: f32 = BASE_MIN_BLOCK_WIDTH * SCALE;
+pub const BLOCK_WIDTH: f32 = BASE_BLOCK_WIDTH * SCALE;
+pub const BATTLE_FIELD_WIDTH: f32 = BASE_BATTLE_FIELD_WIDTH * SCALE;
+pub const WINDOW_WIDTH: f32 = BASE_WINDOW_WIDTH * SCALE;
+pub const WINDOW_HEIGHT: f32 = BASE_WINDOW_HEIGHT * SCALE;

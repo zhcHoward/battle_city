@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{ai, ai::TankType, p1, p2, tank::SCALE, texture::Textures, utils::Owner};
+use crate::{ai, ai::TankType, consts::SCALE, p1, p2, texture::Textures, utils::Owner};
 
 #[derive(Debug, PartialEq)]
 pub enum State {

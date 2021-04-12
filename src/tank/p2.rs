@@ -1,13 +1,18 @@
 use crate::{
     collision::{collide, Collider},
-    tank::{Tank, GAME_WIDTH, MAX_BLOCK, SCALE, TANK_SIZE, TANK_SPEED},
+    consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
+    tank::{Tank, TANK_SIZE, TANK_SPEED},
     utils::{Direction, Owner, P2},
 };
 use bevy::{math::const_vec3, prelude::*};
 
 pub const DIRECTION_KEYS: [KeyCode; 4] =
     [KeyCode::Up, KeyCode::Right, KeyCode::Down, KeyCode::Left];
-pub const SPAWN_POSITION: Vec3 = const_vec3!([2. * MAX_BLOCK, (MAX_BLOCK - GAME_WIDTH) / 2., 0.]);
+pub const SPAWN_POSITION: Vec3 = const_vec3!([
+    2. * BLOCK_WIDTH,
+    (BLOCK_WIDTH - BATTLE_FIELD_WIDTH) / 2.,
+    0.
+]);
 
 pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
@@ -116,7 +121,7 @@ pub fn movement(
     }
 
     let mut size;
-    let mut min_distance = GAME_WIDTH; // a large float number
+    let mut min_distance = BATTLE_FIELD_WIDTH; // a large float number
     for (collider, transform, sprite) in obstacles.iter() {
         match collider {
             Collider::Grass | Collider::Snow | Collider::Bullet => continue,
