@@ -2,7 +2,7 @@ use crate::{
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
-    tank::{Tank, TANK_SIZE, TANK_SPEED},
+    tank::{AnimationTimer, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
     utils::{Direction, Owner, P1},
 };
@@ -33,14 +33,15 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
         })
         .with(P1)
         .with(Collider::Tank)
-        .with(Timer::from_seconds(0.01, true));
+        .with(MovementTimer(Timer::from_seconds(0.01, true)))
+        .with(AnimationTimer(Timer::from_seconds(0.1, true)));
 }
 
 /// Animation systems
 pub fn animation(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &Tank), With<P1>>,
+    mut query: Query<(&mut AnimationTimer, &mut TextureAtlasSprite, &Tank), With<P1>>,
 ) {
     let result = query.iter_mut().next();
     if result.is_none() {
@@ -58,7 +59,7 @@ pub fn animation(
         return;
     }
 
-    if timer.tick(time.delta_seconds() / 5.).just_finished() {
+    if timer.0.tick(time.delta_seconds()).finished() {
         if sprite.index % 2 == 0 {
             sprite.index += 1;
         } else {
@@ -76,12 +77,14 @@ pub fn movement(
             &mut Transform,
             &mut TextureAtlasSprite,
             &mut Tank,
-            &mut Timer,
+            &mut MovementTimer,
         ),
         With<P1>,
     >,
     obstacles: Query<(&Collider, &Transform, Option<&Sprite>), Without<P1>>,
 ) {
+    // let start = SystemTime::now();
+    // println!("start: {:?}", start);
     let result = tank.iter_mut().next();
     if result.is_none() {
         return;
@@ -168,7 +171,7 @@ pub fn movement(
         }
     }
     let move_distance = min_distance.min(TANK_SPEED);
-    if timer.tick(time.delta_seconds()).just_finished() {
+    if timer.0.tick(time.delta_seconds()).finished() {
         match tank.direction {
             Direction::Up => t_transform.translation.y += move_distance,
             Direction::Right => t_transform.translation.x += move_distance,

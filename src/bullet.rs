@@ -4,13 +4,13 @@ use crate::{
     collision::Collider,
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     explosion,
-    tank::{Tank, TANK_SIZE},
+    tank::{Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
     utils::{Direction, Owner, AI, P1, P2},
 };
 
 const BULLET_POS: f32 = 10. * SCALE;
-const BULLET_SPEED: f32 = 2. * SCALE;
+const BULLET_SPEED: f32 = TANK_SPEED + 1.;
 pub const BULLET_SIZE: Vec2 = const_vec2!([4. * SCALE, 4. * SCALE]);
 
 #[derive(Debug)]
@@ -59,7 +59,7 @@ pub fn spawn(
             source: source.clone(),
         })
         .with(Collider::Bullet)
-        .with(Timer::from_seconds(0.02, true));
+        .with(Timer::from_seconds(0.01, true));
 
     // add additional mark for the bullet, makes querying for bullet easier
     match source {
@@ -72,7 +72,7 @@ pub fn spawn(
 // Movement system
 pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform, &Bullet)>) {
     for (mut timer, mut transform, bullet) in bullets.iter_mut() {
-        if timer.tick(time.delta_seconds()).just_finished() {
+        if timer.tick(time.delta_seconds()).finished() {
             transform.translation += match bullet.direction {
                 Direction::Up => Vec3::unit_y() * bullet.speed,
                 Direction::Right => Vec3::unit_x() * bullet.speed,
