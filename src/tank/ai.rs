@@ -7,13 +7,17 @@ use crate::{
 use bevy::{math::const_vec3, prelude::*};
 
 pub const SPAWN_POSITION1: Vec3 = const_vec3!([
-    (BLOCK_WIDTH - BATTLE_FIELD_WIDTH) / 2.,
+    -BATTLE_FIELD_WIDTH / 2.,
     (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2.,
     0.
 ]);
-pub const SPAWN_POSITION2: Vec3 = const_vec3!([0., (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2., 0.]);
-pub const SPAWN_POSITION3: Vec3 = const_vec3!([
+pub const SPAWN_POSITION2: Vec3 = const_vec3!([
+    -0.5 * BLOCK_WIDTH,
     (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2.,
+    0.
+]);
+pub const SPAWN_POSITION3: Vec3 = const_vec3!([
+    BATTLE_FIELD_WIDTH / 2. - BLOCK_WIDTH,
     (BATTLE_FIELD_WIDTH - BLOCK_WIDTH) / 2.,
     0.
 ]);

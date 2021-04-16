@@ -9,7 +9,7 @@ use bevy::{math::const_vec3, prelude::*};
 pub const DIRECTION_KEYS: [KeyCode; 4] =
     [KeyCode::Up, KeyCode::Right, KeyCode::Down, KeyCode::Left];
 pub const SPAWN_POSITION: Vec3 = const_vec3!([
-    2. * BLOCK_WIDTH,
+    1.5 * BLOCK_WIDTH,
     (BLOCK_WIDTH - BATTLE_FIELD_WIDTH) / 2.,
     0.
 ]);
