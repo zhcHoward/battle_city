@@ -6,7 +6,7 @@ use bevy::{
 };
 
 const TEXTURE_WIDTH: f32 = 16.;
-const MIN_TEXTURE_WIDTH: f32 = TEXTURE_WIDTH / 2.;
+const HALF_TEXTURE_WIDTH: f32 = TEXTURE_WIDTH / 2.;
 
 pub struct Textures {
     pub texture: Handle<TextureAtlas>,
@@ -15,7 +15,7 @@ pub struct Textures {
 pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     let texture_handle = asset_server.load("General Sprites.png");
     let mut sprites = Vec::new();
-    // load tank with different color in order: yellow, white, green, red
+    // load tank with different color in order: yellow, white, green, red, 16x16px
     // sprite index 0 ~ 255
     for y in 0..16 {
         for x in 0..16 {
@@ -28,7 +28,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
             });
         }
     }
-    // base (the eagle)
+    // base (the eagle) 16x16px
     // sprite index 256 ~ 257
     sprites.push(Rect {
         min: Vec2::new(19. * TEXTURE_WIDTH, 2. * TEXTURE_WIDTH),
@@ -40,29 +40,46 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     });
 
     // load terrain
-    // bricks, but with only size of 8px * 8px
-    // sprite index 258 ~ 262
-    for i in 0..5 {
-        sprites.push(Rect {
-            min: Vec2::new(16. * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
-            max: Vec2::new(
-                16. * TEXTURE_WIDTH + MIN_TEXTURE_WIDTH * (i + 1) as f32,
-                4. * TEXTURE_WIDTH + MIN_TEXTURE_WIDTH,
-            ),
-        })
-    }
-    // load iron, grass, snow and river
+    // 16x16 brick
+    // sprite index 258
+    sprites.push(Rect {
+        min: Vec2::new(16. * TEXTURE_WIDTH, 0.),
+        max: Vec2::new(17. * TEXTURE_WIDTH, TEXTURE_WIDTH),
+    });
+    // 8 x 8 brick
+    // sprite index 259
+    sprites.push(Rect {
+        min: Vec2::new(16. * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(16.5 * TEXTURE_WIDTH, 4.5 * TEXTURE_WIDTH),
+    });
+    // 4 x 4 brick
+    // sprite index 260 ~ 261
+    sprites.push(Rect {
+        min: Vec2::new(16. * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(16.25 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
+    });
+    sprites.push(Rect {
+        min: Vec2::new(16.25 * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(16.5 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
+    });
+    // duplicated sprite only for occupying index 262
+    sprites.push(Rect {
+        min: Vec2::new(16.25 * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(16.5 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
+    });
+
+    // load iron, grass, snow and river, 8x8px
     // sprite index 263 ~ 268
     for y in 0..2 {
         for x in 0..3 {
             sprites.push(Rect {
                 min: Vec2::new(
-                    16. * TEXTURE_WIDTH + MIN_TEXTURE_WIDTH * x as f32,
-                    4. * TEXTURE_WIDTH + MIN_TEXTURE_WIDTH * (y + 1) as f32,
+                    16. * TEXTURE_WIDTH + HALF_TEXTURE_WIDTH * x as f32,
+                    4. * TEXTURE_WIDTH + HALF_TEXTURE_WIDTH * (y + 1) as f32,
                 ),
                 max: Vec2::new(
-                    16. * TEXTURE_WIDTH + MIN_TEXTURE_WIDTH * (x + 1) as f32,
-                    4. * TEXTURE_WIDTH + MIN_TEXTURE_WIDTH * (y + 2) as f32,
+                    16. * TEXTURE_WIDTH + HALF_TEXTURE_WIDTH * (x + 1) as f32,
+                    4. * TEXTURE_WIDTH + HALF_TEXTURE_WIDTH * (y + 2) as f32,
                 ),
             });
         }
@@ -77,7 +94,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
         });
     }
 
-    // load bullets
+    // load bullets 4x4px
     // sprite index 273 ~ 276
     sprites.push(Rect {
         min: Vec2::new(323., 102.),
