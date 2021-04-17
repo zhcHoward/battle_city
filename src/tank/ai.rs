@@ -1,8 +1,9 @@
 use crate::{
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
+    star,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
-    utils::{Direction, Owner, P2},
+    utils::{Direction, Owner},
 };
 use bevy::{math::const_vec3, prelude::*};
 
@@ -31,6 +32,15 @@ pub enum TankType {
 }
 
 pub fn spawn(
+    commands: &mut Commands,
+    texture: Handle<TextureAtlas>,
+    position: Vec3,
+    tank_type: TankType,
+) {
+    star::spawn(commands, texture, position, Owner::AI, Some(tank_type));
+}
+
+pub fn _spawn(
     commands: &mut Commands,
     texture: Handle<TextureAtlas>,
     position: Vec3,

@@ -2,6 +2,7 @@ use crate::{
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
+    star,
     tank::{AnimationTimer, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
     utils::{Direction, Owner, P1},
@@ -15,7 +16,13 @@ pub const SPAWN_POSITION: Vec3 = const_vec3!([
     0.
 ]);
 
+/// actually spawns a star
 pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
+    star::spawn(commands, texture, SPAWN_POSITION, Owner::P1, None);
+}
+
+/// the real function that spawns a tank after star is despawned
+pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
         .spawn(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(0),

@@ -67,9 +67,9 @@ pub fn twinkling(
                     true => {
                         commands.despawn(entity);
                         match star.owner {
-                            Owner::P1 => p1::spawn(commands, textures.texture.clone()),
+                            Owner::P1 => p1::_spawn(commands, textures.texture.clone()),
                             Owner::P2 => p2::spawn(commands, textures.texture.clone()),
-                            Owner::AI => ai::spawn(
+                            Owner::AI => ai::_spawn(
                                 commands,
                                 textures.texture.clone(),
                                 transform.translation,

@@ -92,13 +92,8 @@ fn setup(
 }
 
 fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
-    star::spawn(
-        commands,
-        textures.texture.clone(),
-        p1::SPAWN_POSITION,
-        utils::Owner::P1,
-        None,
-    );
+    let texture = &textures.texture;
+    p1::spawn(commands, texture.clone());
     star::spawn(
         commands,
         textures.texture.clone(),
@@ -106,25 +101,22 @@ fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
         utils::Owner::P2,
         None,
     );
-    star::spawn(
+    ai::spawn(
         commands,
-        textures.texture.clone(),
+        texture.clone(),
         ai::SPAWN_POSITION1,
-        utils::Owner::AI,
-        Some(ai::TankType::Light),
+        ai::TankType::Light,
     );
-    star::spawn(
+    ai::spawn(
         commands,
-        textures.texture.clone(),
+        texture.clone(),
         ai::SPAWN_POSITION2,
-        utils::Owner::AI,
-        Some(ai::TankType::Medium),
+        ai::TankType::Medium,
     );
-    star::spawn(
+    ai::spawn(
         commands,
-        textures.texture.clone(),
+        texture.clone(),
         ai::SPAWN_POSITION3,
-        utils::Owner::AI,
-        Some(ai::TankType::Heavy),
+        ai::TankType::Heavy,
     );
 }
