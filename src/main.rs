@@ -1,5 +1,6 @@
 use bevy::{prelude::*, render::pass::ClearColor};
 
+mod brick;
 mod bullet;
 mod collision;
 mod consts;
@@ -8,10 +9,15 @@ mod star;
 mod tank;
 mod texture;
 mod utils;
+use brick::BrickType;
 use collision::Collider;
-use consts::{BATTLE_FIELD_WIDTH, MIN_BLOCK_WIDTH, SCALE, WINDOW_HEIGHT, WINDOW_WIDTH};
+use consts::{
+    BATTLE_FIELD_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE,
+    WINDOW_HEIGHT, WINDOW_WIDTH,
+};
 use tank::{ai, p1, p2};
 use texture::{load_texture_atlas, Textures};
+use utils::block2translation as b2t;
 
 fn main() {
     let mut app = App::build();
@@ -24,6 +30,7 @@ fn main() {
     .add_resource(ClearColor(Color::BLACK))
     .add_startup_system(setup.system())
     .add_startup_stage("game_setup", SystemStage::single(spawn_tank.system()))
+    .add_startup_stage("terrian_setup", SystemStage::single(spawn_terrian.system()))
     .add_system(star::twinkling.system())
     .add_system(p1::movement.system())
     .add_system(p2::movement.system())
@@ -76,7 +83,7 @@ fn setup(
         // top
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(-MIN_BLOCK_WIDTH, 108. * SCALE, 0.)),
+            transform: Transform::from_translation(Vec3::new(-HALF_BLOCK_WIDTH, 108. * SCALE, 0.)),
             sprite: Sprite::new(Vec2::new(BATTLE_FIELD_WIDTH, 8. * SCALE)),
             ..Default::default()
         })
@@ -84,7 +91,7 @@ fn setup(
         // bottom
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
-            transform: Transform::from_translation(Vec3::new(-MIN_BLOCK_WIDTH, -108. * SCALE, 0.)),
+            transform: Transform::from_translation(Vec3::new(-HALF_BLOCK_WIDTH, -108. * SCALE, 0.)),
             sprite: Sprite::new(Vec2::new(BATTLE_FIELD_WIDTH, 8. * SCALE)),
             ..Default::default()
         })
@@ -118,5 +125,14 @@ fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
         texture.clone(),
         ai::SPAWN_POSITION3,
         ai::TankType::Heavy,
+    );
+}
+
+fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
+    brick::spawn(
+        commands,
+        textures.texture.clone(),
+        b2t(Vec2::new(0., 0.), 0.),
+        BrickType::Brick,
     );
 }

@@ -1,4 +1,5 @@
 use crate::{
+    brick::BRICK_SIZE,
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
@@ -150,6 +151,7 @@ pub fn movement(
             Collider::Tank => {
                 size = TANK_SIZE;
             }
+            Collider::Brick => size = BRICK_SIZE,
             _ => match sprite {
                 Some(s) => size = s.size,
                 None => {
