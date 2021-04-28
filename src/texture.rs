@@ -52,8 +52,29 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
         min: Vec2::new(16. * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
         max: Vec2::new(16.5 * TEXTURE_WIDTH, 4.5 * TEXTURE_WIDTH),
     });
+    // 4 x 8 brick
+    // top, index 260
+    sprites.push(Rect {
+        min: Vec2::new(18. * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(18.5 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
+    });
+    // right, index 261
+    sprites.push(Rect {
+        min: Vec2::new(16.75 * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(17. * TEXTURE_WIDTH, 4.5 * TEXTURE_WIDTH),
+    });
+    // bottom, index 262
+    sprites.push(Rect {
+        min: Vec2::new(17. * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
+        max: Vec2::new(17.5 * TEXTURE_WIDTH, 4.5 * TEXTURE_WIDTH),
+    });
+    // left, index 263
+    sprites.push(Rect {
+        min: Vec2::new(17.5 * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
+        max: Vec2::new(17.75 * TEXTURE_WIDTH, 4.5 * TEXTURE_WIDTH),
+    });
     // 4 x 4 brick
-    // sprite index 260 ~ 261
+    // sprite index 264 ~ 265
     sprites.push(Rect {
         min: Vec2::new(16. * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
         max: Vec2::new(16.25 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
@@ -62,14 +83,9 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
         min: Vec2::new(16.25 * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
         max: Vec2::new(16.5 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
     });
-    // duplicated sprite only for occupying index 262
-    sprites.push(Rect {
-        min: Vec2::new(16.25 * TEXTURE_WIDTH, 4. * TEXTURE_WIDTH),
-        max: Vec2::new(16.5 * TEXTURE_WIDTH, 4.25 * TEXTURE_WIDTH),
-    });
 
     // load iron, grass, snow and river, 8x8px
-    // sprite index 263 ~ 268
+    // sprite index 266 ~ 271
     for y in 0..2 {
         for x in 0..3 {
             sprites.push(Rect {
@@ -86,7 +102,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     }
 
     // load star which twinkles when spawning player's tank
-    // sprite index 269 ~ 272
+    // sprite index 272 ~ 275
     for i in 0..4 {
         sprites.push(Rect {
             min: Vec2::new((16 + i) as f32 * TEXTURE_WIDTH, 6. * TEXTURE_WIDTH),
@@ -95,7 +111,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     }
 
     // load bullets 4x4px
-    // sprite index 273 ~ 276
+    // sprite index 276 ~ 279
     sprites.push(Rect {
         min: Vec2::new(323., 102.),
         max: Vec2::new(327., 106.),
@@ -114,7 +130,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     });
 
     // load power ups
-    // sprite index 277 ~ 283
+    // sprite index 280 ~ 286
     for i in 0..7 {
         sprites.push(Rect {
             min: Vec2::new((16 + i) as f32 * TEXTURE_WIDTH, 7. * TEXTURE_WIDTH),
@@ -123,7 +139,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     }
 
     // load tank exploded effect
-    // sprite index 284 ~ 286
+    // sprite index 287 ~ 289
     for i in 0..3 {
         sprites.push(Rect {
             min: Vec2::new((16 + i) as f32 * TEXTURE_WIDTH, 8. * TEXTURE_WIDTH),
@@ -132,7 +148,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     }
 
     // load 2 large explosion (32 x 32)
-    // sprite index 287 ~ 288
+    // sprite index 290 ~ 291
     sprites.push(Rect {
         min: Vec2::new(304., 128.),
         max: Vec2::new(336., 160.),
@@ -143,7 +159,7 @@ pub fn load_texture_atlas(asset_server: Res<AssetServer>) -> TextureAtlas {
     });
 
     // load tank shield
-    // sprite index 287 ~ 288
+    // sprite index 292 ~ 293
     for i in 0..2 {
         sprites.push(Rect {
             min: Vec2::new((16 + i) as f32 * TEXTURE_WIDTH, 9. * TEXTURE_WIDTH),

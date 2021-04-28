@@ -9,7 +9,7 @@ pub struct Explosion {
 pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>, position: Vec3, is_big: bool) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(284),
+            sprite: TextureAtlasSprite::new(287),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,
@@ -30,14 +30,14 @@ pub fn explode(
     for (mut timer, mut sprite, entity, explosion) in explosions.iter_mut() {
         if timer.tick(time.delta_seconds()).just_finished() {
             match sprite.index {
-                286 => {
+                289 => {
                     if explosion.is_big {
                         sprite.index += 1;
                     } else {
                         commands.despawn(entity);
                     }
                 }
-                288 => {
+                291 => {
                     commands.despawn(entity);
                 }
                 _ => sprite.index += 1,

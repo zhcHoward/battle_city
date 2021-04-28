@@ -24,7 +24,7 @@ pub fn spawn(
 ) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(269),
+            sprite: TextureAtlasSprite::new(272),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,
@@ -57,13 +57,13 @@ pub fn twinkling(
     for (entity, mut timer, mut sprite, transform, mut star) in stars.iter_mut() {
         if timer.tick(time.delta_seconds()).just_finished() {
             match sprite.index {
-                269 => {
+                272 => {
                     if star.state == State::Shrink {
                         star.state = State::Enlarge;
                     }
                     sprite.index += 1;
                 }
-                272 => match star.done {
+                275 => match star.done {
                     true => {
                         commands.despawn(entity);
                         match star.owner {

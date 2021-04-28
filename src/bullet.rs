@@ -1,6 +1,7 @@
 use bevy::{math::const_vec2, prelude::*, sprite::collide_aabb::collide};
 
 use crate::{
+    brick::BRICK_SIZE,
     collision::Collider,
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     explosion,
@@ -37,10 +38,10 @@ pub fn spawn(
     source: Owner,
 ) {
     let sprite_index = match direction {
-        Direction::Up => 273,
-        Direction::Right => 276,
-        Direction::Down => 275,
-        Direction::Left => 274,
+        Direction::Up => 276,
+        Direction::Right => 279,
+        Direction::Down => 278,
+        Direction::Left => 277,
     };
     commands
         .spawn(SpriteSheetBundle {
@@ -107,6 +108,7 @@ pub fn collision(
                 Collider::Tank | Collider::Base => TANK_SIZE,
                 Collider::Bullet => BULLET_SIZE,
                 Collider::Boundary => sprite.unwrap().size,
+                Collider::Brick => BRICK_SIZE,
                 _ => TANK_SIZE / 2.,
             };
             let collision = collide(
