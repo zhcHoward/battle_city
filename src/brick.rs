@@ -3,13 +3,13 @@ use bevy::{math::const_vec2, prelude::*};
 use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    utils::Size,
 };
 
 pub const BRICK_SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 
 #[derive(Bundle)]
 pub struct Brick {
-    pub size: Vec2,
     pub b_type: BrickType,
 }
 
@@ -44,9 +44,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: BRICK_SIZE / 4.,
                     b_type: BrickType::MinBrick1,
                 })
+                .with(Size::from_vec2(BRICK_SIZE / 4.))
                 .with(Collider::Brick);
         }
         BrickType::MinBrick2 => {
@@ -62,9 +62,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: BRICK_SIZE / 4.,
                     b_type: BrickType::MinBrick2,
                 })
+                .with(Size::from_vec2(BRICK_SIZE / 4.))
                 .with(Collider::Brick);
         }
         BrickType::HalfQuarterBrickTop => {
@@ -80,9 +80,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: Vec2::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH),
                     b_type: BrickType::HalfQuarterBrickTop,
                 })
+                .with(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
                 .with(Collider::Brick);
         }
         BrickType::HalfQuarterBrickRight => {
@@ -98,9 +98,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: Vec2::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH),
                     b_type: BrickType::HalfQuarterBrickRight,
                 })
+                .with(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
                 .with(Collider::Brick);
         }
         BrickType::HalfQuarterBrickBottom => {
@@ -116,9 +116,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: Vec2::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH),
                     b_type: BrickType::HalfQuarterBrickBottom,
                 })
+                .with(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
                 .with(Collider::Brick);
         }
         BrickType::HalfQuarterBrickLeft => {
@@ -134,9 +134,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: Vec2::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH),
                     b_type: BrickType::HalfQuarterBrickLeft,
                 })
+                .with(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
                 .with(Collider::Brick);
         }
         BrickType::QuarterBrick => {
@@ -152,9 +152,9 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .with(Brick {
-                    size: BRICK_SIZE / 2.,
                     b_type: BrickType::QuarterBrick,
                 })
+                .with(Size::from_vec2(BRICK_SIZE / 2.))
                 .with(Collider::Brick);
         }
         BrickType::Brick => {

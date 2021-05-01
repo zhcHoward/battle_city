@@ -12,7 +12,7 @@ use crate::{
     explosion,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
-    utils::{Direction, Owner, AI, P1, P2},
+    utils::{Direction, Owner, Size, AI, P1, P2},
 };
 
 const BULLET_POS: f32 = 10. * SCALE;
@@ -101,13 +101,16 @@ pub fn collision(
         Option<&Sprite>,
         Option<&Tank>,
         Option<&Bullet>,
+        Option<&Size>,
         Option<&Brick>,
     )>,
 ) {
     let mut size;
     let texture = &textures.texture;
     for (b_entity, b_transform, bullet) in bullets.iter() {
-        for (c_entity, collider, c_transform, sprite, tank, c_bullet, c_brick) in colliders.iter() {
+        for (c_entity, collider, c_transform, sprite, tank, c_bullet, c_size, c_brick) in
+            colliders.iter()
+        {
             if b_entity == c_entity {
                 continue;
             }
@@ -115,8 +118,7 @@ pub fn collision(
                 Collider::Tank | Collider::Base => TANK_SIZE,
                 Collider::Bullet => BULLET_SIZE,
                 Collider::Boundary => sprite.unwrap().size,
-                Collider::Brick => c_brick.unwrap().size,
-                _ => TANK_SIZE / 2.,
+                _ => c_size.unwrap().size(),
             };
             let collision = collide(
                 b_transform.translation,
