@@ -1,5 +1,5 @@
 use crate::{
-    brick::BRICK_SIZE,
+    brick::Brick,
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
@@ -89,7 +89,7 @@ pub fn movement(
         ),
         With<P1>,
     >,
-    obstacles: Query<(&Collider, &Transform, Option<&Sprite>), Without<P1>>,
+    obstacles: Query<(&Collider, &Transform, Option<&Sprite>, Option<&Brick>), Without<P1>>,
 ) {
     // let start = SystemTime::now();
     // println!("start: {:?}", start);
@@ -145,13 +145,13 @@ pub fn movement(
 
     let mut size;
     let mut min_distance = BATTLE_FIELD_WIDTH; // a large float number
-    for (collider, transform, sprite) in obstacles.iter() {
+    for (collider, transform, sprite, brick) in obstacles.iter() {
         match collider {
             Collider::Grass | Collider::Snow | Collider::Bullet => continue,
             Collider::Tank => {
                 size = TANK_SIZE;
             }
-            Collider::Brick => size = BRICK_SIZE,
+            Collider::Brick => size = brick.unwrap().size,
             _ => match sprite {
                 Some(s) => size = s.size,
                 None => {

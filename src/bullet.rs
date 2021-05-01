@@ -1,9 +1,14 @@
-use bevy::{math::const_vec2, prelude::*, sprite::collide_aabb::collide};
+use bevy::{
+    math::const_vec2,
+    prelude::*,
+    sprite::collide_aabb::{collide, Collision},
+};
 
 use crate::{
-    brick::BRICK_SIZE,
+    brick,
+    brick::{Brick, BrickType},
     collision::Collider,
-    consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
+    consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
     explosion,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
@@ -96,11 +101,13 @@ pub fn collision(
         Option<&Sprite>,
         Option<&Tank>,
         Option<&Bullet>,
+        Option<&Brick>,
     )>,
 ) {
     let mut size;
+    let texture = &textures.texture;
     for (b_entity, b_transform, bullet) in bullets.iter() {
-        for (c_entity, collider, c_transform, sprite, tank, c_bullet) in colliders.iter() {
+        for (c_entity, collider, c_transform, sprite, tank, c_bullet, c_brick) in colliders.iter() {
             if b_entity == c_entity {
                 continue;
             }
@@ -108,7 +115,7 @@ pub fn collision(
                 Collider::Tank | Collider::Base => TANK_SIZE,
                 Collider::Bullet => BULLET_SIZE,
                 Collider::Boundary => sprite.unwrap().size,
-                Collider::Brick => BRICK_SIZE,
+                Collider::Brick => c_brick.unwrap().size,
                 _ => TANK_SIZE / 2.,
             };
             let collision = collide(
@@ -120,11 +127,107 @@ pub fn collision(
             if collision.is_none() {
                 continue;
             }
+            let collision = collision.unwrap();
             match collider {
                 Collider::Grass => {
                     // TODO: tanks with enough power ups can remove grass, e.g. 4 stars
                 }
-                Collider::Brick => {}
+                Collider::Brick => {
+                    commands.despawn(b_entity).despawn(c_entity);
+                    // TO FIX: explosion will be spawned twice if bullet hit the middle of a Brick (hit 2 QuarteBrick in a single frame)
+                    explosion::spawn(commands, texture.clone(), b_transform.translation, false);
+                    let pos = c_transform.translation;
+                    match c_brick.unwrap().b_type {
+                        BrickType::Brick => unreachable!(), // a Brick is actually 4 QuarterBrick
+                        BrickType::QuarterBrick => match collision {
+                            Collision::Top => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x, pos.y - HALF_MIN_BLOCK_WIDTH, pos.z),
+                                BrickType::HalfQuarterBrickBottom,
+                            ),
+                            Collision::Right => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x - HALF_MIN_BLOCK_WIDTH, pos.y, pos.z),
+                                BrickType::HalfQuarterBrickLeft,
+                            ),
+                            Collision::Bottom => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x, pos.y + HALF_MIN_BLOCK_WIDTH, pos.z),
+                                BrickType::HalfQuarterBrickTop,
+                            ),
+                            Collision::Left => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x + HALF_MIN_BLOCK_WIDTH, pos.y, pos.z),
+                                BrickType::HalfQuarterBrickRight,
+                            ),
+                        },
+                        BrickType::HalfQuarterBrickTop => match collision {
+                            Collision::Top | Collision::Bottom => (),
+                            Collision::Left => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x + HALF_MIN_BLOCK_WIDTH, pos.y, pos.z),
+                                BrickType::MinBrick2,
+                            ),
+                            Collision::Right => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x - HALF_MIN_BLOCK_WIDTH, pos.y, pos.z),
+                                BrickType::MinBrick1,
+                            ),
+                        },
+                        BrickType::HalfQuarterBrickRight => match collision {
+                            Collision::Left | Collision::Right => (),
+                            Collision::Top => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x, pos.y - HALF_MIN_BLOCK_WIDTH, pos.z),
+                                BrickType::MinBrick1,
+                            ),
+                            Collision::Bottom => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x, pos.y - HALF_MIN_BLOCK_WIDTH, pos.z),
+                                BrickType::MinBrick2,
+                            ),
+                        },
+                        BrickType::HalfQuarterBrickBottom => match collision {
+                            Collision::Top | Collision::Bottom => (),
+                            Collision::Left => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x + HALF_MIN_BLOCK_WIDTH, pos.y, pos.z),
+                                BrickType::MinBrick1,
+                            ),
+                            Collision::Right => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x - HALF_MIN_BLOCK_WIDTH, pos.y, pos.z),
+                                BrickType::MinBrick2,
+                            ),
+                        },
+                        BrickType::HalfQuarterBrickLeft => match collision {
+                            Collision::Left | Collision::Right => (),
+                            Collision::Top => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x, pos.y - HALF_MIN_BLOCK_WIDTH, pos.z),
+                                BrickType::MinBrick2,
+                            ),
+                            Collision::Bottom => brick::spawn(
+                                commands,
+                                texture.clone(),
+                                Vec3::new(pos.x, pos.y - HALF_MIN_BLOCK_WIDTH, pos.z),
+                                BrickType::MinBrick1,
+                            ),
+                        },
+                        BrickType::MinBrick1 | BrickType::MinBrick2 => (),
+                    };
+                }
                 Collider::Iron => {}
                 Collider::River | Collider::Snow => continue,
                 Collider::Boundary => {
@@ -143,7 +246,7 @@ pub fn collision(
                             Vec3::new(-7. * BLOCK_WIDTH, b_transform.translation.y, 0.)
                         }
                     };
-                    explosion::spawn(commands, textures.texture.clone(), pos, false);
+                    explosion::spawn(commands, texture.clone(), pos, false);
                 }
                 Collider::Base => {
                     commands.despawn(b_entity);
@@ -169,7 +272,7 @@ pub fn collision(
                                 commands.despawn(b_entity).despawn(c_entity);
                                 explosion::spawn(
                                     commands,
-                                    textures.texture.clone(),
+                                    texture.clone(),
                                     c_transform.translation,
                                     true,
                                 );
@@ -185,7 +288,7 @@ pub fn collision(
                                 commands.despawn(b_entity).despawn(c_entity);
                                 explosion::spawn(
                                     commands,
-                                    textures.texture.clone(),
+                                    texture.clone(),
                                     c_transform.translation,
                                     true,
                                 );
