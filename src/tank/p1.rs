@@ -89,7 +89,7 @@ pub fn movement(
         ),
         With<P1>,
     >,
-    obstacles: Query<(&Collider, &Transform, Option<&Sprite>, Option<&Size>), Without<P1>>,
+    obstacles: Query<(&Collider, &Transform, Option<&Size>), Without<P1>>,
 ) {
     // let start = SystemTime::now();
     // println!("start: {:?}", start);
@@ -145,15 +145,14 @@ pub fn movement(
 
     let mut size;
     let mut min_distance = BATTLE_FIELD_WIDTH; // a large float number
-    for (collider, transform, sprite, c_size) in obstacles.iter() {
+    for (collider, transform, c_size) in obstacles.iter() {
         match collider {
             Collider::Grass | Collider::Snow | Collider::Bullet => continue,
             Collider::Tank => {
                 size = TANK_SIZE;
             }
-            Collider::Brick => size = c_size.unwrap().size(),
-            _ => match sprite {
-                Some(s) => size = s.size,
+            _ => match c_size {
+                Some(s) => size = s.size(),
                 None => {
                     println!("Collider {:?} does not have size", collider);
                     continue;

@@ -12,12 +12,12 @@ mod utils;
 use brick::BrickType;
 use collision::Collider;
 use consts::{
-    BATTLE_FIELD_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE,
-    WINDOW_HEIGHT, WINDOW_WIDTH,
+    BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH,
+    SCALE, WINDOW_HEIGHT, WINDOW_WIDTH,
 };
 use tank::{ai, p1, p2};
 use texture::{load_texture_atlas, Textures};
-use utils::block2translation as b2t;
+use utils::{block2translation as b2t, Size};
 
 fn main() {
     let mut app = App::build();
@@ -63,39 +63,46 @@ fn setup(
     // spawn boundaries
     let boundary_material = materials.add(Color::GRAY.into());
     // let wall_thickness = 10.;
+    let left_size = Vec2::new(BLOCK_WIDTH, WINDOW_HEIGHT);
+    let right_size = Vec2::new(2. * BLOCK_WIDTH, WINDOW_HEIGHT);
+    let top_size = Vec2::new(BATTLE_FIELD_WIDTH, HALF_BLOCK_WIDTH);
     commands
         // left
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(-120. * SCALE, 0., 0.)),
-            sprite: Sprite::new(Vec2::new(16. * SCALE, WINDOW_HEIGHT)),
+            sprite: Sprite::new(left_size),
             ..Default::default()
         })
         .with(Collider::Boundary)
+        .with(Size::from_vec2(left_size))
         // right
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(112. * SCALE, 0., 0.)),
-            sprite: Sprite::new(Vec2::new(32. * SCALE, WINDOW_HEIGHT)),
+            sprite: Sprite::new(right_size),
             ..Default::default()
         })
         .with(Collider::Boundary)
+        .with(Size::from_vec2(right_size))
         // top
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(-HALF_BLOCK_WIDTH, 108. * SCALE, 0.)),
-            sprite: Sprite::new(Vec2::new(BATTLE_FIELD_WIDTH, 8. * SCALE)),
+            sprite: Sprite::new(top_size),
             ..Default::default()
         })
         .with(Collider::Boundary)
+        .with(Size::from_vec2(top_size))
         // bottom
         .spawn(SpriteBundle {
             material: boundary_material.clone(),
             transform: Transform::from_translation(Vec3::new(-HALF_BLOCK_WIDTH, -108. * SCALE, 0.)),
-            sprite: Sprite::new(Vec2::new(BATTLE_FIELD_WIDTH, 8. * SCALE)),
+            sprite: Sprite::new(top_size),
             ..Default::default()
         })
-        .with(Collider::Boundary);
+        .with(Collider::Boundary)
+        .with(Size::from_vec2(top_size));
 }
 
 fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
