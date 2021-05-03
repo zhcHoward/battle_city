@@ -5,6 +5,7 @@ mod bullet;
 mod collision;
 mod consts;
 mod explosion;
+mod grass;
 mod iron;
 mod star;
 mod tank;
@@ -146,4 +147,5 @@ fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
     );
 
     iron::spawn(commands, b2t(Vec2::new(1., 0.), 0.), texture.clone());
+    grass::spawn(commands, b2t(Vec2::new(-1., 0.), 1.), texture.clone());
 }
