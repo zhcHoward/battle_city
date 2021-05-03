@@ -8,6 +8,17 @@ pub enum Direction {
     Down,
 }
 
+impl Direction {
+    pub fn is_opposite(self, other: Direction) -> bool {
+        match self {
+            Self::Left => other == Self::Right,
+            Self::Right => other == Self::Left,
+            Self::Up => other == Self::Down,
+            Self::Down => other == Self::Up,
+        }
+    }
+}
+
 pub struct Size(Vec2);
 
 impl Size {

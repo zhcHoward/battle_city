@@ -1,10 +1,9 @@
 use crate::{
-    brick::Brick,
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     star,
-    tank::{AnimationTimer, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
+    tank::{cal_position, AnimationTimer, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
     utils::{Direction, Owner, Size, P1},
 };
@@ -91,31 +90,42 @@ pub fn movement(
     >,
     obstacles: Query<(&Collider, &Transform, Option<&Size>), Without<P1>>,
 ) {
-    // let start = SystemTime::now();
-    // println!("start: {:?}", start);
     let result = tank.iter_mut().next();
     if result.is_none() {
         return;
     }
     let (mut t_transform, mut t_sprite, mut tank, mut timer) = result.unwrap();
 
+    // The center of battle field is (-HALF_BLOCK_WIDTH, 0)
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
         t_sprite.index = 0;
+        if !tank.direction.is_opposite(Direction::Up) {
+            t_transform.translation.x = cal_position(t_transform.translation, Direction::Up);
+        }
         tank.direction = Direction::Up;
         return;
     }
     if keyboard_input.just_pressed(DIRECTION_KEYS[1]) && tank.direction != Direction::Right {
         t_sprite.index = 6;
+        if !tank.direction.is_opposite(Direction::Right) {
+            t_transform.translation.y = cal_position(t_transform.translation, Direction::Right);
+        }
         tank.direction = Direction::Right;
         return;
     }
     if keyboard_input.just_pressed(DIRECTION_KEYS[2]) && tank.direction != Direction::Down {
         t_sprite.index = 4;
+        if !tank.direction.is_opposite(Direction::Down) {
+            t_transform.translation.x = cal_position(t_transform.translation, Direction::Down);
+        }
         tank.direction = Direction::Down;
         return;
     }
     if keyboard_input.just_pressed(DIRECTION_KEYS[3]) && tank.direction != Direction::Left {
         t_sprite.index = 2;
+        if !tank.direction.is_opposite(Direction::Left) {
+            t_transform.translation.y = cal_position(t_transform.translation, Direction::Left);
+        }
         tank.direction = Direction::Left;
         return;
     }
