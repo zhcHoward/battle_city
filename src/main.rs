@@ -1,5 +1,6 @@
 use bevy::{prelude::*, render::pass::ClearColor};
 
+mod base;
 mod brick;
 mod bullet;
 mod collision;
@@ -16,8 +17,7 @@ mod utils;
 use brick::BrickType;
 use collision::Collider;
 use consts::{
-    BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH,
-    SCALE, WINDOW_HEIGHT, WINDOW_WIDTH,
+    BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_BLOCK_WIDTH, SCALE, WINDOW_HEIGHT, WINDOW_WIDTH,
 };
 use tank::{ai, p1, p2};
 use texture::{load_texture_atlas, Textures};
@@ -153,4 +153,5 @@ fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
     grass::spawn(commands, b2t(Vec2::new(-1., 0.), 1.), texture.clone());
     snow::spawn(commands, b2t(Vec2::new(0., -1.), 0.), texture.clone());
     river::spawn(commands, b2t(Vec2::new(1., -1.), 0.), texture.clone());
+    base::spawn_base1(commands, b2t(Vec2::new(0., -6.), 0.), texture.clone());
 }

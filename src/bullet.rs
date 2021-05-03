@@ -5,7 +5,7 @@ use bevy::{
 };
 
 use crate::{
-    brick,
+    base, brick,
     brick::{Brick, BrickType},
     collision::Collider,
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, SCALE},
@@ -255,7 +255,9 @@ pub fn collision(
                     explosion::spawn(commands, texture.clone(), pos, false);
                 }
                 Collider::Base => {
-                    commands.despawn(b_entity);
+                    commands.despawn(b_entity).despawn(c_entity);
+                    explosion::spawn(commands, texture.clone(), b_transform.translation, false);
+                    base::spawn_base2(commands, c_transform.translation, texture.clone());
                     // TODO: Game Over
                 }
                 Collider::Bullet => {
