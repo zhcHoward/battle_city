@@ -1,5 +1,6 @@
 use crate::consts::BLOCK_WIDTH;
 use bevy::math::{Vec2, Vec3};
+
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Direction {
     Left,

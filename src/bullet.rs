@@ -8,7 +8,7 @@ use crate::{
     brick,
     brick::{Brick, BrickType},
     collision::Collider,
-    consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, SCALE},
     explosion,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
@@ -230,7 +230,11 @@ pub fn collision(
                         BrickType::MinBrick1 | BrickType::MinBrick2 => (),
                     };
                 }
-                Collider::Iron => {}
+                Collider::Iron => {
+                    commands.despawn(b_entity);
+                    explosion::spawn(commands, texture.clone(), b_transform.translation, false);
+                    // TODO: destroy Iron if tank has enough power
+                }
                 Collider::River | Collider::Snow => continue,
                 Collider::Boundary => {
                     commands.despawn(b_entity);

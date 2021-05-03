@@ -5,6 +5,7 @@ mod bullet;
 mod collision;
 mod consts;
 mod explosion;
+mod iron;
 mod star;
 mod tank;
 mod texture;
@@ -136,10 +137,13 @@ fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
 }
 
 fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
+    let texture = &textures.texture;
     brick::spawn(
         commands,
-        textures.texture.clone(),
+        texture.clone(),
         b2t(Vec2::new(0., 0.), 0.),
         BrickType::Brick,
     );
+
+    iron::spawn(commands, b2t(Vec2::new(1., 0.), 0.), texture.clone());
 }
