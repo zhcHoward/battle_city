@@ -7,6 +7,7 @@ mod consts;
 mod explosion;
 mod grass;
 mod iron;
+mod river;
 mod snow;
 mod star;
 mod tank;
@@ -43,6 +44,7 @@ fn main() {
     .add_system(bullet::movement.system())
     .add_system(bullet::collision.system())
     .add_system(explosion::explode.system())
+    .add_system(river::wave.system())
     .add_plugins(DefaultPlugins)
     .run();
 }
@@ -149,5 +151,6 @@ fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
 
     iron::spawn(commands, b2t(Vec2::new(1., 0.), 0.), texture.clone());
     grass::spawn(commands, b2t(Vec2::new(-1., 0.), 1.), texture.clone());
-    snow::spawn(commands, b2t(Vec2::new(-0., -1.), 0.), texture.clone());
+    snow::spawn(commands, b2t(Vec2::new(0., -1.), 0.), texture.clone());
+    river::spawn(commands, b2t(Vec2::new(1., -1.), 0.), texture.clone());
 }
