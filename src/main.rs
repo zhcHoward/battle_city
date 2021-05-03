@@ -8,6 +8,7 @@ mod consts;
 mod explosion;
 mod grass;
 mod iron;
+mod power_up;
 mod river;
 mod snow;
 mod star;
@@ -154,4 +155,47 @@ fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
     snow::spawn(commands, b2t(Vec2::new(0., -1.), 0.), texture.clone());
     river::spawn(commands, b2t(Vec2::new(1., -1.), 0.), texture.clone());
     base::spawn_base1(commands, b2t(Vec2::new(0., -6.), 0.), texture.clone());
+
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(-3., 1.), 0.),
+        power_up::PowerUpType::Helmet,
+        texture.clone(),
+    );
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(-2., 1.), 0.),
+        power_up::PowerUpType::Clock,
+        texture.clone(),
+    );
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(-1., 1.), 0.),
+        power_up::PowerUpType::Shovel,
+        texture.clone(),
+    );
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(0., 1.), 0.),
+        power_up::PowerUpType::Star,
+        texture.clone(),
+    );
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(1., 1.), 0.),
+        power_up::PowerUpType::Grenade,
+        texture.clone(),
+    );
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(2., 1.), 0.),
+        power_up::PowerUpType::Tank,
+        texture.clone(),
+    );
+    power_up::spawn(
+        commands,
+        b2t(Vec2::new(3., 1.), 0.),
+        power_up::PowerUpType::Gun,
+        texture.clone(),
+    );
 }
