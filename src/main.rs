@@ -7,6 +7,7 @@ mod consts;
 mod explosion;
 mod grass;
 mod iron;
+mod snow;
 mod star;
 mod tank;
 mod texture;
@@ -148,4 +149,5 @@ fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
 
     iron::spawn(commands, b2t(Vec2::new(1., 0.), 0.), texture.clone());
     grass::spawn(commands, b2t(Vec2::new(-1., 0.), 1.), texture.clone());
+    snow::spawn(commands, b2t(Vec2::new(-0., -1.), 0.), texture.clone());
 }
