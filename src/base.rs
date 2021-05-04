@@ -1,6 +1,7 @@
 use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    texture::SpriteIndex,
     utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
@@ -11,7 +12,7 @@ pub struct Base;
 pub fn spawn_base1(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(256),
+            sprite: TextureAtlasSprite::new(SpriteIndex::BASE[0]),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,
@@ -28,7 +29,7 @@ pub fn spawn_base1(commands: &mut Commands, position: Vec3, texture: Handle<Text
 pub fn spawn_base2(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(257),
+            sprite: TextureAtlasSprite::new(SpriteIndex::BASE[1]),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,

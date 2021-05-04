@@ -1,6 +1,7 @@
 use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    texture::SpriteIndex,
     utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
@@ -12,7 +13,7 @@ pub struct River;
 pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(270),
+            sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -31,7 +32,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         .with(Timer::from_seconds(TIMER_INTERVAL, true));
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(270),
+            sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -50,7 +51,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         .with(Timer::from_seconds(TIMER_INTERVAL, true));
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(270),
+            sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -69,7 +70,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         .with(Timer::from_seconds(TIMER_INTERVAL, true));
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(270),
+            sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -91,10 +92,10 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
 pub fn wave(time: Res<Time>, mut query: Query<(&mut TextureAtlasSprite, &mut Timer), With<River>>) {
     for (mut sprite, mut timer) in query.iter_mut() {
         if timer.tick(time.delta_seconds()).just_finished() {
-            sprite.index = match sprite.index {
-                270 => 271,
-                271 => 270,
-                _ => unreachable!(),
+            if sprite.index == SpriteIndex::RIVER[1] {
+                sprite.index += 1;
+            } else {
+                sprite.index -= 1;
             }
         }
     }

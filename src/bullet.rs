@@ -11,7 +11,7 @@ use crate::{
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, SCALE},
     explosion,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
-    texture::Textures,
+    texture::{SpriteIndex, Textures},
     utils::{Direction, Owner, Size, AI, P1, P2},
 };
 
@@ -43,10 +43,10 @@ pub fn spawn(
     source: Owner,
 ) {
     let sprite_index = match direction {
-        Direction::Up => 276,
-        Direction::Right => 279,
-        Direction::Down => 278,
-        Direction::Left => 277,
+        Direction::Up => SpriteIndex::BULLET[0],
+        Direction::Right => SpriteIndex::BULLET[3],
+        Direction::Down => SpriteIndex::BULLET[2],
+        Direction::Left => SpriteIndex::BULLET[1],
     };
     commands
         .spawn(SpriteSheetBundle {

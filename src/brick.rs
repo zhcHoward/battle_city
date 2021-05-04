@@ -3,6 +3,7 @@ use bevy::{math::const_vec2, prelude::*};
 use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    texture::SpriteIndex,
     utils::Size,
 };
 
@@ -34,7 +35,7 @@ pub fn spawn(
         BrickType::MinBrick1 => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(264),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[6]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,
@@ -52,7 +53,7 @@ pub fn spawn(
         BrickType::MinBrick2 => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(265),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[7]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,
@@ -70,7 +71,7 @@ pub fn spawn(
         BrickType::HalfQuarterBrickTop => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(260),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[2]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,
@@ -88,7 +89,7 @@ pub fn spawn(
         BrickType::HalfQuarterBrickRight => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(261),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[3]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,
@@ -106,7 +107,7 @@ pub fn spawn(
         BrickType::HalfQuarterBrickBottom => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(262),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[4]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,
@@ -124,7 +125,7 @@ pub fn spawn(
         BrickType::HalfQuarterBrickLeft => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(263),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[5]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,
@@ -142,7 +143,7 @@ pub fn spawn(
         BrickType::QuarterBrick => {
             commands
                 .spawn(SpriteSheetBundle {
-                    sprite: TextureAtlasSprite::new(259),
+                    sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[1]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
                         translation: position,

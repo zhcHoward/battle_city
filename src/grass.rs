@@ -1,6 +1,7 @@
 use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    texture::SpriteIndex,
     utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
@@ -11,7 +12,7 @@ pub struct Grass;
 pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(267),
+            sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -29,7 +30,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         .with(Collider::Grass);
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(267),
+            sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -47,7 +48,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         .with(Collider::Grass);
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(267),
+            sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(
@@ -65,7 +66,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         .with(Collider::Grass);
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(267),
+            sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
                 translation: Vec3::new(

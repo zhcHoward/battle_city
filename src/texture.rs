@@ -8,6 +8,21 @@ use bevy::{
 const TEXTURE_WIDTH: f32 = 16.;
 const HALF_TEXTURE_WIDTH: f32 = TEXTURE_WIDTH / 2.;
 
+pub struct SpriteIndex;
+impl SpriteIndex {
+    pub const BASE: [u32; 2] = [256, 257];
+    pub const BRICK: [u32; 8] = [258, 259, 260, 261, 262, 263, 264, 265];
+    pub const IRON: [u32; 1] = [266];
+    pub const GRASS: [u32; 1] = [267];
+    pub const SNOW: [u32; 1] = [268];
+    pub const RIVER: [u32; 3] = [269, 270, 271];
+    pub const STAR: [u32; 4] = [272, 273, 274, 275];
+    pub const BULLET: [u32; 4] = [276, 277, 278, 279];
+    pub const POWER_UP: [u32; 7] = [280, 281, 282, 283, 284, 285, 286];
+    pub const EXPLOSION: [u32; 5] = [287, 288, 289, 290, 291];
+    pub const SHIELD: [u32; 2] = [292, 293];
+}
+
 pub struct Textures {
     pub texture: Handle<TextureAtlas>,
 }

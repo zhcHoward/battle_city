@@ -1,6 +1,7 @@
 use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, SCALE},
+    texture::SpriteIndex,
     utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
@@ -8,6 +9,7 @@ use bevy::{math::const_vec2, prelude::*};
 const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 
 struct PowerUp;
+#[derive(Debug, Copy, Clone)]
 pub enum PowerUpType {
     Helmet,
     Clock,
@@ -18,24 +20,29 @@ pub enum PowerUpType {
     Gun,
 }
 
+impl From<PowerUpType> for u32 {
+    fn from(ptype: PowerUpType) -> Self {
+        match ptype {
+            PowerUpType::Helmet => SpriteIndex::POWER_UP[0],
+            PowerUpType::Clock => SpriteIndex::POWER_UP[1],
+            PowerUpType::Shovel => SpriteIndex::POWER_UP[2],
+            PowerUpType::Star => SpriteIndex::POWER_UP[3],
+            PowerUpType::Grenade => SpriteIndex::POWER_UP[4],
+            PowerUpType::Tank => SpriteIndex::POWER_UP[5],
+            PowerUpType::Gun => SpriteIndex::POWER_UP[6],
+        }
+    }
+}
+
 pub fn spawn(
     commands: &mut Commands,
     position: Vec3,
     power_up: PowerUpType,
     texture: Handle<TextureAtlas>,
 ) {
-    let index = match power_up {
-        PowerUpType::Helmet => 280,
-        PowerUpType::Clock => 281,
-        PowerUpType::Shovel => 282,
-        PowerUpType::Star => 283,
-        PowerUpType::Grenade => 284,
-        PowerUpType::Tank => 285,
-        PowerUpType::Gun => 286,
-    };
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(index),
+            sprite: TextureAtlasSprite::new(power_up.into()),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,

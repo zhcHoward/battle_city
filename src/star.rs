@@ -1,6 +1,13 @@
 use bevy::prelude::*;
 
-use crate::{ai, ai::TankType, consts::SCALE, p1, p2, texture::Textures, utils::Owner};
+use crate::{
+    ai,
+    ai::TankType,
+    consts::SCALE,
+    p1, p2,
+    texture::{SpriteIndex, Textures},
+    utils::Owner,
+};
 
 #[derive(Debug, PartialEq)]
 pub enum State {
@@ -24,7 +31,7 @@ pub fn spawn(
 ) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(272),
+            sprite: TextureAtlasSprite::new(SpriteIndex::STAR[0]),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,

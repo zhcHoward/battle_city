@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::consts::SCALE;
+use crate::{consts::SCALE, texture::SpriteIndex};
 
 pub struct Explosion {
     is_big: bool,
@@ -9,7 +9,7 @@ pub struct Explosion {
 pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>, position: Vec3, is_big: bool) {
     commands
         .spawn(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(287),
+            sprite: TextureAtlasSprite::new(SpriteIndex::EXPLOSION[0]),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,
