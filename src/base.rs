@@ -1,12 +1,12 @@
 use crate::{
     collision::Collider,
-    consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    consts::{BLOCK_WIDTH, SCALE},
     texture::SpriteIndex,
     utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
 
-const SIZE: Vec2 = const_vec2!([HALF_BLOCK_WIDTH, HALF_BLOCK_WIDTH]);
+const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 pub struct Base;
 
 pub fn spawn_base1(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
