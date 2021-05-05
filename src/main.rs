@@ -52,6 +52,8 @@ fn main() {
     .add_plugins(DefaultPlugins)
     .add_event::<event::DestroyAllEnemies>()
     .add_system(event::handle_destroy_all_enemies.system())
+    .add_event::<event::ChangeBaseWall>()
+    .add_system(event::handle_change_base_wall.system())
     .run();
 }
 
@@ -155,7 +157,12 @@ fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
         BrickType::Brick,
     );
 
-    iron::spawn(commands, b2t(Vec2::new(1., 0.), 0.), texture.clone());
+    iron::spawn(
+        commands,
+        b2t(Vec2::new(1., 0.), 0.),
+        texture.clone(),
+        iron::IronType::Iron,
+    );
     grass::spawn(commands, b2t(Vec2::new(-1., 0.), 1.), texture.clone());
     snow::spawn(commands, b2t(Vec2::new(0., -1.), 0.), texture.clone());
     river::spawn(commands, b2t(Vec2::new(1., -1.), 0.), texture.clone());

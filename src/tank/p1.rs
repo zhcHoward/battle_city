@@ -92,6 +92,7 @@ pub fn movement(
     >,
     obstacles: Query<(Entity, &Collider, &Transform, &Size, Option<&PowerUp>), Without<P1>>,
     mut dae_events: ResMut<Events<event::DestroyAllEnemies>>,
+    mut cbw_events: ResMut<Events<event::ChangeBaseWall>>,
 ) {
     let texture = &textures.texture;
     let result = tank.iter_mut().next();
@@ -204,7 +205,9 @@ pub fn movement(
                                 }
                             }
                             PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field
-                            PowerUp::Shovel => (),
+                            PowerUp::Shovel => {
+                                cbw_events.send(event::ChangeBaseWall { by: tank.owner });
+                            }
                             PowerUp::Grenade => {
                                 dae_events.send(event::DestroyAllEnemies { by: tank.owner });
                             }
