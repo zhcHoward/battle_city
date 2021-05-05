@@ -131,6 +131,7 @@ pub fn collision(
             }
             let collision = collision.unwrap();
             match collider {
+                Collider::River | Collider::Snow | Collider::PowerUp => continue,
                 Collider::Grass => {
                     // TODO: tanks with enough power ups can remove grass, e.g. 4 stars
                 }
@@ -235,7 +236,6 @@ pub fn collision(
                     explosion::spawn(commands, texture.clone(), b_transform.translation, false);
                     // TODO: destroy Iron if tank has enough power
                 }
-                Collider::River | Collider::Snow => continue,
                 Collider::Boundary => {
                     commands.despawn(b_entity);
                     let pos = match bullet.direction {

@@ -1,7 +1,7 @@
-use crate::{bullet::BULLET_SIZE, tank::TANK_SIZE, utils::Direction};
+use crate::utils::Direction;
 use bevy::math::{Vec2, Vec3};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum Collider {
     Boundary, // boundary of battle field
     Brick,
@@ -12,6 +12,7 @@ pub enum Collider {
     Base, // The eagle
     Tank,
     Bullet,
+    PowerUp,
 }
 
 /// Calculates the distance between a tank and an obstacle in front of it

@@ -6,11 +6,10 @@ use crate::{
 };
 use bevy::{math::const_vec2, prelude::*};
 
-const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
+pub const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 
-struct PowerUp;
 #[derive(Debug, Copy, Clone)]
-pub enum PowerUpType {
+pub enum PowerUp {
     Helmet,
     Clock,
     Shovel,
@@ -20,16 +19,16 @@ pub enum PowerUpType {
     Gun,
 }
 
-impl From<PowerUpType> for u32 {
-    fn from(ptype: PowerUpType) -> Self {
-        match ptype {
-            PowerUpType::Helmet => SpriteIndex::POWER_UP[0],
-            PowerUpType::Clock => SpriteIndex::POWER_UP[1],
-            PowerUpType::Shovel => SpriteIndex::POWER_UP[2],
-            PowerUpType::Star => SpriteIndex::POWER_UP[3],
-            PowerUpType::Grenade => SpriteIndex::POWER_UP[4],
-            PowerUpType::Tank => SpriteIndex::POWER_UP[5],
-            PowerUpType::Gun => SpriteIndex::POWER_UP[6],
+impl From<PowerUp> for u32 {
+    fn from(power_up: PowerUp) -> Self {
+        match power_up {
+            PowerUp::Helmet => SpriteIndex::POWER_UP[0],
+            PowerUp::Clock => SpriteIndex::POWER_UP[1],
+            PowerUp::Shovel => SpriteIndex::POWER_UP[2],
+            PowerUp::Star => SpriteIndex::POWER_UP[3],
+            PowerUp::Grenade => SpriteIndex::POWER_UP[4],
+            PowerUp::Tank => SpriteIndex::POWER_UP[5],
+            PowerUp::Gun => SpriteIndex::POWER_UP[6],
         }
     }
 }
@@ -37,7 +36,7 @@ impl From<PowerUpType> for u32 {
 pub fn spawn(
     commands: &mut Commands,
     position: Vec3,
-    power_up: PowerUpType,
+    power_up: PowerUp,
     texture: Handle<TextureAtlas>,
 ) {
     commands
@@ -51,6 +50,7 @@ pub fn spawn(
             },
             ..Default::default()
         })
-        .with(PowerUp)
+        .with(power_up)
+        .with(Collider::PowerUp)
         .with(Size::from_vec2(SIZE));
 }

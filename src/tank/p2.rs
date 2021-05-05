@@ -27,8 +27,8 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
             ..Default::default()
         })
         .with(Tank {
-            direction: Direction::Up,
             owner: Owner::P2,
+            ..Default::default()
         })
         .with(P2)
         .with(Collider::Tank)

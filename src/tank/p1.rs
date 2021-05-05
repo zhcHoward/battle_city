@@ -2,12 +2,13 @@ use crate::{
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
-    star,
+    power_up::PowerUp,
+    shield, star,
     tank::{cal_position, AnimationTimer, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
     texture::Textures,
     utils::{Direction, Owner, Size, P1},
 };
-use bevy::{math::const_vec3, prelude::*};
+use bevy::{math::const_vec3, prelude::*, sprite::collide_aabb};
 
 pub const DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::W, KeyCode::D, KeyCode::S, KeyCode::A];
 pub const SPAWN_POSITION: Vec3 = const_vec3!([
@@ -34,10 +35,7 @@ pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
             },
             ..Default::default()
         })
-        .with(Tank {
-            direction: Direction::Up,
-            owner: Owner::P1,
-        })
+        .with(Tank::default())
         .with(P1)
         .with(Collider::Tank)
         .with(MovementTimer(Timer::from_seconds(0.01, true)))
@@ -78,9 +76,12 @@ pub fn animation(
 /// Movement system
 pub fn movement(
     time: Res<Time>,
+    commands: &mut Commands,
     keyboard_input: Res<Input<KeyCode>>,
+    textures: Res<Textures>,
     mut tank: Query<
         (
+            Entity,
             &mut Transform,
             &mut TextureAtlasSprite,
             &mut Tank,
@@ -88,13 +89,14 @@ pub fn movement(
         ),
         With<P1>,
     >,
-    obstacles: Query<(&Collider, &Transform, Option<&Size>), Without<P1>>,
+    obstacles: Query<(Entity, &Collider, &Transform, &Size, Option<&PowerUp>), Without<P1>>,
 ) {
+    let texture = &textures.texture;
     let result = tank.iter_mut().next();
     if result.is_none() {
         return;
     }
-    let (mut t_transform, mut t_sprite, mut tank, mut timer) = result.unwrap();
+    let (t_entity, mut t_transform, mut t_sprite, mut tank, mut timer) = result.unwrap();
 
     // The center of battle field is (-HALF_BLOCK_WIDTH, 0)
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
@@ -155,19 +157,35 @@ pub fn movement(
 
     let mut size;
     let mut min_distance = BATTLE_FIELD_WIDTH; // a large float number
-    for (collider, transform, c_size) in obstacles.iter() {
+    for (c_entity, collider, transform, c_size, power_up) in obstacles.iter() {
         match collider {
             Collider::Grass | Collider::Snow | Collider::Bullet => continue,
+            Collider::PowerUp => {
+                match collide_aabb::collide(
+                    t_transform.translation,
+                    TANK_SIZE,
+                    transform.translation,
+                    c_size.size(),
+                ) {
+                    None => (),
+                    Some(_) => {
+                        match power_up.unwrap() {
+                            PowerUp::Helmet => {
+                                tank.shield = true;
+                                shield::spawn(commands, t_entity, texture.clone());
+                                commands.despawn(c_entity);
+                            }
+                            PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field
+                            _ => (),
+                        }
+                    }
+                };
+                continue;
+            }
             Collider::Tank => {
                 size = TANK_SIZE;
             }
-            _ => match c_size {
-                Some(s) => size = s.size(),
-                None => {
-                    println!("Collider {:?} does not have size", collider);
-                    continue;
-                }
-            },
+            _ => size = c_size.size(),
         }
         match collide(
             t_transform.translation,

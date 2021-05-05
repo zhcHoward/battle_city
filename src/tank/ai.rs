@@ -64,8 +64,8 @@ pub fn _spawn(
             ..Default::default()
         })
         .with(Tank {
-            direction: Direction::Up,
             owner: Owner::AI,
+            ..Default::default()
         })
         .with(tank_type)
         .with(Collider::Tank)
