@@ -2,6 +2,7 @@ use crate::{
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
+    event,
     power_up::PowerUp,
     shield, star,
     tank::{cal_position, AnimationTimer, MovementTimer, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED},
@@ -90,6 +91,7 @@ pub fn movement(
         With<P1>,
     >,
     obstacles: Query<(Entity, &Collider, &Transform, &Size, Option<&PowerUp>), Without<P1>>,
+    mut dae_events: ResMut<Events<event::DestroyAllEnemies>>,
 ) {
     let texture = &textures.texture;
     let result = tank.iter_mut().next();
@@ -202,7 +204,10 @@ pub fn movement(
                                 }
                             }
                             PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field
-                            _ => (),
+                            PowerUp::Shovel => (),
+                            PowerUp::Grenade => {
+                                dae_events.send(event::DestroyAllEnemies { by: tank.owner });
+                            }
                         }
                     }
                 };

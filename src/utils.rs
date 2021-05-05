@@ -44,11 +44,20 @@ impl Size {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Owner {
     P1,
     P2,
     AI,
+}
+
+impl Owner {
+    pub fn is_enemy(self, other: Owner) -> bool {
+        match self {
+            Owner::P1 | Owner::P2 => other == Owner::AI,
+            Owner::AI => other != Owner::AI,
+        }
+    }
 }
 
 pub struct P1;

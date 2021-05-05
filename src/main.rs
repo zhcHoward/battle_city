@@ -5,6 +5,7 @@ mod brick;
 mod bullet;
 mod collision;
 mod consts;
+mod event;
 mod explosion;
 mod grass;
 mod iron;
@@ -49,6 +50,8 @@ fn main() {
     .add_system(river::wave.system())
     .add_system(shield::animation.system())
     .add_plugins(DefaultPlugins)
+    .add_event::<event::DestroyAllEnemies>()
+    .add_system(event::handle_destroy_all_enemies.system())
     .run();
 }
 
