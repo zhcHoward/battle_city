@@ -17,6 +17,7 @@ pub struct Tank {
     pub shield: bool,
     pub amphibious: bool,
     pub base_sprite: u32,
+    pub life: u8,
 }
 
 impl Tank {
@@ -38,6 +39,7 @@ impl Default for Tank {
             shield: false,
             amphibious: false,
             base_sprite: 0,
+            life: 2,
         }
     }
 }

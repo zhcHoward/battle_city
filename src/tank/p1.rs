@@ -196,6 +196,11 @@ pub fn movement(
                                     Direction::Left => 50,
                                 };
                             }
+                            PowerUp::Tank => {
+                                if tank.life < 99 {
+                                    tank.life += 1;
+                                }
+                            }
                             PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field
                             _ => (),
                         }
