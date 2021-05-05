@@ -100,7 +100,7 @@ pub fn movement(
 
     // The center of battle field is (-HALF_BLOCK_WIDTH, 0)
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
-        t_sprite.index = 0;
+        t_sprite.index = tank.base_sprite;
         if !tank.direction.is_opposite(Direction::Up) {
             t_transform.translation.x = cal_position(t_transform.translation, Direction::Up);
         }
@@ -108,7 +108,7 @@ pub fn movement(
         return;
     }
     if keyboard_input.just_pressed(DIRECTION_KEYS[1]) && tank.direction != Direction::Right {
-        t_sprite.index = 6;
+        t_sprite.index = tank.base_sprite + 6;
         if !tank.direction.is_opposite(Direction::Right) {
             t_transform.translation.y = cal_position(t_transform.translation, Direction::Right);
         }
@@ -116,7 +116,7 @@ pub fn movement(
         return;
     }
     if keyboard_input.just_pressed(DIRECTION_KEYS[2]) && tank.direction != Direction::Down {
-        t_sprite.index = 4;
+        t_sprite.index = tank.base_sprite + 4;
         if !tank.direction.is_opposite(Direction::Down) {
             t_transform.translation.x = cal_position(t_transform.translation, Direction::Down);
         }
@@ -124,7 +124,7 @@ pub fn movement(
         return;
     }
     if keyboard_input.just_pressed(DIRECTION_KEYS[3]) && tank.direction != Direction::Left {
-        t_sprite.index = 2;
+        t_sprite.index = tank.base_sprite + 2;
         if !tank.direction.is_opposite(Direction::Left) {
             t_transform.translation.y = cal_position(t_transform.translation, Direction::Left);
         }
@@ -169,11 +169,22 @@ pub fn movement(
                 ) {
                     None => (),
                     Some(_) => {
+                        commands.despawn(c_entity);
                         match power_up.unwrap() {
                             PowerUp::Helmet => {
                                 tank.shield = true;
                                 shield::spawn(commands, t_entity, texture.clone());
-                                commands.despawn(c_entity);
+                            }
+                            PowerUp::Star => {
+                                match tank.level {
+                                    3 => tank.level += 1, // level 4 can remove grass
+                                    0 | 1 | 2 => {
+                                        tank.level += 1;
+                                        tank.base_sprite += 16;
+                                        t_sprite.index += 16;
+                                    }
+                                    _ => (),
+                                };
                             }
                             PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field
                             _ => (),

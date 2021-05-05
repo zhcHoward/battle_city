@@ -28,6 +28,7 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
         })
         .with(Tank {
             owner: Owner::P2,
+            base_sprite: 128,
             ..Default::default()
         })
         .with(P2)

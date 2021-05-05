@@ -65,6 +65,7 @@ pub fn _spawn(
         })
         .with(Tank {
             owner: Owner::AI,
+            base_sprite: index,
             ..Default::default()
         })
         .with(tank_type)

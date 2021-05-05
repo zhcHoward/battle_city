@@ -16,6 +16,7 @@ pub struct Tank {
     pub level: u8,
     pub shield: bool,
     pub amphibious: bool,
+    pub base_sprite: u32,
 }
 
 impl Tank {
@@ -36,6 +37,7 @@ impl Default for Tank {
             level: 0,
             shield: false,
             amphibious: false,
+            base_sprite: 0,
         }
     }
 }
