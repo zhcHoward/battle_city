@@ -4,7 +4,7 @@ use crate::{
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     power_up::PowerUp,
     shield, star,
-    tank::{cal_position, AnimationTimer, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
+    tank::{cal_position, AnimationTimer, MovementTimer, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED},
     texture::Textures,
     utils::{Direction, Owner, Size, P1},
 };
@@ -184,6 +184,16 @@ pub fn movement(
                                         t_sprite.index += 16;
                                     }
                                     _ => (),
+                                };
+                            }
+                            PowerUp::Gun => {
+                                tank.base_sprite = 48; // TODO: set base_sprite with const variable instead of manually set to 48
+                                tank.level = MAX_LEVEL.min(tank.level + 3);
+                                t_sprite.index = match tank.direction {
+                                    Direction::Up => 48,
+                                    Direction::Right => 54,
+                                    Direction::Down => 52,
+                                    Direction::Left => 50,
                                 };
                             }
                             PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field

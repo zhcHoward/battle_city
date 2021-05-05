@@ -44,7 +44,7 @@ impl Default for Tank {
 
 pub const TANK_SPEED: f32 = HALF_BLOCK_WIDTH / 8.;
 pub const TANK_SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
-
+pub const MAX_LEVEL: u8 = 4;
 pub struct AnimationTimer(Timer);
 pub struct MovementTimer(Timer);
 
