@@ -2,7 +2,9 @@ use crate::{
     base::Base,
     bullet::Bullet,
     consts::{BLOCK_WIDTH, MIN_BLOCK_WIDTH},
-    explosion, iron,
+    explosion,
+    game_data::GameData,
+    iron,
     shield::Shield,
     tank::Tank,
     texture::Textures,
@@ -48,9 +50,9 @@ pub struct ChangeBaseWall {
     pub by: Owner,
 }
 
-const BaseWallMin: Vec2 = const_vec2!([-2. * BLOCK_WIDTH, -6.5 * BLOCK_WIDTH]);
-const BaseWallMax: Vec2 = const_vec2!([BLOCK_WIDTH, -4.5 * BLOCK_WIDTH]);
-const BaseWallPositions: [Vec3; 8] = [
+pub const BaseWallMin: Vec2 = const_vec2!([-2. * BLOCK_WIDTH, -6.5 * BLOCK_WIDTH]);
+pub const BaseWallMax: Vec2 = const_vec2!([BLOCK_WIDTH, -4.5 * BLOCK_WIDTH]);
+pub const BaseWallPositions: [Vec3; 8] = [
     const_vec3!([-5. * MIN_BLOCK_WIDTH, -25. * MIN_BLOCK_WIDTH, 0.]),
     const_vec3!([-5. * MIN_BLOCK_WIDTH, -23. * MIN_BLOCK_WIDTH, 0.]),
     const_vec3!([-5. * MIN_BLOCK_WIDTH, -21. * MIN_BLOCK_WIDTH, 0.]),
@@ -75,8 +77,10 @@ pub fn handle_change_base_wall(
         ),
     >,
     textures: Res<Textures>,
+    mut game_data: ResMut<GameData>,
 ) {
     let texture = &textures.texture;
+    let mut by_ai = true;
     for event in event_reader.iter(&events) {
         for (entity, transform) in query.iter() {
             let pos = transform.translation.truncate();
@@ -85,10 +89,13 @@ pub fn handle_change_base_wall(
             }
         }
         if event.by != Owner::AI {
+            by_ai = false;
             for pos in &BaseWallPositions {
                 iron::spawn(commands, *pos, texture.clone(), iron::IronType::QuarterIron);
             }
         }
         break;
     }
+    game_data.base_changed = true;
+    game_data.base_wall_hidden = by_ai;
 }

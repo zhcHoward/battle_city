@@ -7,6 +7,7 @@ mod collision;
 mod consts;
 mod event;
 mod explosion;
+mod game_data;
 mod grass;
 mod iron;
 mod power_up;
@@ -22,6 +23,7 @@ use collision::Collider;
 use consts::{
     BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_BLOCK_WIDTH, SCALE, WINDOW_HEIGHT, WINDOW_WIDTH,
 };
+use game_data::GameData;
 use tank::{ai, p1, p2};
 use texture::{load_texture_atlas, Textures};
 use utils::{block2translation as b2t, Size};
@@ -59,7 +61,6 @@ fn main() {
 
 fn setup(
     commands: &mut Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     asset_server: Res<AssetServer>,
 ) {
@@ -71,7 +72,46 @@ fn setup(
         // .spawn(CameraUiBundle::default())
         .insert_resource(Textures {
             texture: texture_handle,
-        });
+        })
+        .insert_resource(GameData::new());
+}
+
+fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
+    let texture = &textures.texture;
+    p1::spawn(commands, texture.clone());
+    star::spawn(
+        commands,
+        textures.texture.clone(),
+        p2::SPAWN_POSITION,
+        utils::Owner::P2,
+        None,
+    );
+    ai::spawn(
+        commands,
+        texture.clone(),
+        ai::SPAWN_POSITION1,
+        ai::TankType::Light,
+    );
+    ai::spawn(
+        commands,
+        texture.clone(),
+        ai::SPAWN_POSITION2,
+        ai::TankType::Medium,
+    );
+    ai::spawn(
+        commands,
+        texture.clone(),
+        ai::SPAWN_POSITION3,
+        ai::TankType::Heavy,
+    );
+}
+
+fn spawn_terrian(
+    commands: &mut Commands,
+    textures: Res<Textures>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    let texture = &textures.texture;
 
     // spawn boundaries
     let boundary_material = materials.add(Color::GRAY.into());
@@ -116,40 +156,7 @@ fn setup(
         })
         .with(Collider::Boundary)
         .with(Size::from_vec2(top_size));
-}
 
-fn spawn_tank(commands: &mut Commands, textures: Res<Textures>) {
-    let texture = &textures.texture;
-    p1::spawn(commands, texture.clone());
-    star::spawn(
-        commands,
-        textures.texture.clone(),
-        p2::SPAWN_POSITION,
-        utils::Owner::P2,
-        None,
-    );
-    ai::spawn(
-        commands,
-        texture.clone(),
-        ai::SPAWN_POSITION1,
-        ai::TankType::Light,
-    );
-    ai::spawn(
-        commands,
-        texture.clone(),
-        ai::SPAWN_POSITION2,
-        ai::TankType::Medium,
-    );
-    ai::spawn(
-        commands,
-        texture.clone(),
-        ai::SPAWN_POSITION3,
-        ai::TankType::Heavy,
-    );
-}
-
-fn spawn_terrian(commands: &mut Commands, textures: Res<Textures>) {
-    let texture = &textures.texture;
     brick::spawn(
         commands,
         texture.clone(),

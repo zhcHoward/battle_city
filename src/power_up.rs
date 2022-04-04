@@ -7,6 +7,8 @@ use crate::{
 use bevy::{math::const_vec2, prelude::*};
 
 pub const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
+pub const SHOVEL_DURATION: f32 = 20.; // 20 seconds
+pub const BLINK_DURATION: f32 = 3.;
 
 #[derive(Debug, Copy, Clone)]
 pub enum PowerUp {
