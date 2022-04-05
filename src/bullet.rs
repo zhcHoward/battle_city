@@ -93,32 +93,36 @@ pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform,
 pub fn collision(
     mut commands: Commands,
     textures: Res<Textures>,
+    texture_atlases: Res<Assets<TextureAtlas>>,
     bullets: Query<(Entity, &Transform, &Bullet)>,
     colliders: Query<(
         Entity,
         &Collider,
         &Transform,
         Option<&Sprite>,
-        Option<&Tank>,
-        Option<&Bullet>,
-        Option<&Size>,
-        Option<&Brick>,
+        Option<&TextureAtlasSprite>,
+        // Option<&Size>,
+        // Option<&Brick>,
     )>,
 ) {
     let mut size;
     let texture = &textures.texture;
     for (b_entity, b_transform, bullet) in bullets.iter() {
-        for (c_entity, collider, c_transform, sprite, tank, c_bullet, c_size, c_brick) in
-            colliders.iter()
-        {
+        for (c_entity, collider, c_transform, sprite, atlas_sprite) in colliders.iter() {
             if b_entity == c_entity {
                 continue;
             }
+            let c = commands.entity(b_entity);
             size = match collider {
-                Collider::Tank | Collider::Base => TANK_SIZE,
-                Collider::Bullet => BULLET_SIZE,
+                // Collider::Tank | Collider::Base => TANK_SIZE,
+                // Collider::Bullet => BULLET_SIZE,
                 Collider::Boundary => sprite.unwrap().custom_size.unwrap(),
-                _ => c_size.unwrap().size(),
+                _ => {
+                    let index = atlas_sprite.unwrap().index;
+                    let texture_atlas = texture_atlases.get(texture).unwrap();
+                    let sprite = texture_atlas.textures.get(index).unwrap();
+                    sprite.size()
+                }
             };
             let collision = collide(
                 b_transform.translation,
@@ -239,7 +243,6 @@ pub fn collision(
                 }
                 Collider::Iron => {
                     commands.entity(b_entity).despawn();
-                    println!("despawned");
                     explosion::spawn(
                         &mut commands,
                         texture.clone(),

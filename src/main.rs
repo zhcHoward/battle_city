@@ -104,15 +104,9 @@ fn spawn_tank(mut commands: Commands, textures: Res<Textures>) {
     );
 }
 
-fn spawn_terrian(
-    mut commands: Commands,
-    textures: Res<Textures>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
     let texture = &textures.texture;
 
-    // spawn boundaries
-    let boundary_material = materials.add(Color::GRAY.into());
     // let wall_thickness = 10.;
     let left_size = Vec2::new(BLOCK_WIDTH, WINDOW_HEIGHT);
     let right_size = Vec2::new(2. * BLOCK_WIDTH, WINDOW_HEIGHT);
