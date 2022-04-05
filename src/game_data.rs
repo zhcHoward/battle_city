@@ -39,7 +39,7 @@ impl GameData {
             p2: 0,
             p2_score: 0,
             base_changed: false,
-            restore_timer: Timer::from_seconds(power_up::SHOVEL_DURATION, false),
+            restore_timer: Timer::new(power_up::SHOVEL_DURATION, false),
             blink_timer: Timer::from_seconds(0.1, true),
             base_wall_hidden: false,
         }
@@ -47,7 +47,7 @@ impl GameData {
 }
 
 pub fn restore_base_wall(
-    commands: &mut Commands,
+    mut commands: Commands,
     time: Res<Time>,
     query: Query<
         (Entity, &Transform),
@@ -67,18 +67,18 @@ pub fn restore_base_wall(
     }
 
     let texture = &textures.texture;
-    let timer = game_data.restore_timer.tick(time.delta_seconds());
+    let timer = game_data.restore_timer.tick(time.delta());
     if timer.finished() {
         for (entity, transform) in query.iter() {
             let pos = transform.translation.truncate();
             if pos.cmpgt(BaseWallMin).all() && pos.cmplt(BaseWallMax).all() {
-                commands.despawn_recursive(entity);
+                commands.entity(entity).despawn_recursive();
             }
         }
 
         for pos in &BaseWallPositions {
             brick::spawn(
-                commands,
+                &mut commands,
                 texture.clone(),
                 *pos,
                 brick::BrickType::QuarterBrick,
@@ -89,16 +89,12 @@ pub fn restore_base_wall(
     }
     let left = timer.duration() - timer.elapsed();
     if left <= power_up::BLINK_DURATION {
-        if game_data
-            .blink_timer
-            .tick(time.delta_seconds())
-            .just_finished()
-        {
+        if game_data.blink_timer.tick(time.delta()).just_finished() {
             if game_data.base_wall_hidden {
             } else {
                 for pos in &BaseWallPositions {
                     brick::spawn(
-                        commands,
+                        &mut commands,
                         texture.clone(),
                         *pos,
                         brick::BrickType::QuarterBrick,

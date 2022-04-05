@@ -1,5 +1,8 @@
 use crate::consts::BLOCK_WIDTH;
-use bevy::math::{Vec2, Vec3};
+use bevy::{
+    math::{Vec2, Vec3},
+    prelude::Component,
+};
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Direction {
@@ -20,6 +23,7 @@ impl Direction {
     }
 }
 
+#[derive(Component)]
 pub struct Size(Vec2);
 
 impl Size {
@@ -44,7 +48,7 @@ impl Size {
     }
 }
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, Component)]
 pub enum Owner {
     P1,
     P2,
@@ -60,8 +64,11 @@ impl Owner {
     }
 }
 
+#[derive(Component)]
 pub struct P1;
+#[derive(Component)]
 pub struct P2;
+#[derive(Component)]
 pub struct AI;
 
 /// Dividing battle field into 13x13 blocks

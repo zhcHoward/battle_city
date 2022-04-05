@@ -7,6 +7,7 @@ use crate::{
 use bevy::{math::const_vec2, prelude::*};
 
 const SIZE: Vec2 = const_vec2!([HALF_BLOCK_WIDTH, HALF_BLOCK_WIDTH]);
+#[derive(Component)]
 pub struct Iron;
 
 pub enum IronType {
@@ -23,7 +24,7 @@ pub fn spawn(
     match itype {
         IronType::QuarterIron => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -33,13 +34,13 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Iron)
-                .with(Size::from_vec2(SIZE))
-                .with(Collider::Iron);
+                .insert(Iron)
+                .insert(Size::from_vec2(SIZE))
+                .insert(Collider::Iron);
         }
         IronType::Iron => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -53,11 +54,11 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Iron)
-                .with(Size::from_vec2(SIZE))
-                .with(Collider::Iron);
+                .insert(Iron)
+                .insert(Size::from_vec2(SIZE))
+                .insert(Collider::Iron);
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -71,11 +72,11 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Iron)
-                .with(Size::from_vec2(SIZE))
-                .with(Collider::Iron);
+                .insert(Iron)
+                .insert(Size::from_vec2(SIZE))
+                .insert(Collider::Iron);
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -89,11 +90,11 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Iron)
-                .with(Size::from_vec2(SIZE))
-                .with(Collider::Iron);
+                .insert(Iron)
+                .insert(Size::from_vec2(SIZE))
+                .insert(Collider::Iron);
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -107,9 +108,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Iron)
-                .with(Size::from_vec2(SIZE))
-                .with(Collider::Iron);
+                .insert(Iron)
+                .insert(Size::from_vec2(SIZE))
+                .insert(Collider::Iron);
         }
     }
 }

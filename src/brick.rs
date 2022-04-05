@@ -9,11 +9,12 @@ use crate::{
 
 pub const BRICK_SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 
-#[derive(Bundle)]
+#[derive(Component, Bundle)]
 pub struct Brick {
     pub b_type: BrickType,
 }
 
+#[derive(Component)]
 pub enum BrickType {
     Brick,
     QuarterBrick,
@@ -34,7 +35,7 @@ pub fn spawn(
     match b_type {
         BrickType::MinBrick1 => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[6]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -44,15 +45,15 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::MinBrick1,
                 })
-                .with(Size::from_vec2(BRICK_SIZE / 4.))
-                .with(Collider::Brick);
+                .insert(Size::from_vec2(BRICK_SIZE / 4.))
+                .insert(Collider::Brick);
         }
         BrickType::MinBrick2 => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[7]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -62,15 +63,15 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::MinBrick2,
                 })
-                .with(Size::from_vec2(BRICK_SIZE / 4.))
-                .with(Collider::Brick);
+                .insert(Size::from_vec2(BRICK_SIZE / 4.))
+                .insert(Collider::Brick);
         }
         BrickType::HalfQuarterBrickTop => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[2]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -80,15 +81,15 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::HalfQuarterBrickTop,
                 })
-                .with(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
-                .with(Collider::Brick);
+                .insert(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
+                .insert(Collider::Brick);
         }
         BrickType::HalfQuarterBrickRight => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[3]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -98,15 +99,15 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::HalfQuarterBrickRight,
                 })
-                .with(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
-                .with(Collider::Brick);
+                .insert(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
+                .insert(Collider::Brick);
         }
         BrickType::HalfQuarterBrickBottom => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[4]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -116,15 +117,15 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::HalfQuarterBrickBottom,
                 })
-                .with(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
-                .with(Collider::Brick);
+                .insert(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
+                .insert(Collider::Brick);
         }
         BrickType::HalfQuarterBrickLeft => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[5]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -134,15 +135,15 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::HalfQuarterBrickLeft,
                 })
-                .with(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
-                .with(Collider::Brick);
+                .insert(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
+                .insert(Collider::Brick);
         }
         BrickType::QuarterBrick => {
             commands
-                .spawn(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::BRICK[1]),
                     texture_atlas: texture.clone(),
                     transform: Transform {
@@ -152,11 +153,11 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .with(Brick {
+                .insert(Brick {
                     b_type: BrickType::QuarterBrick,
                 })
-                .with(Size::from_vec2(BRICK_SIZE / 2.))
-                .with(Collider::Brick);
+                .insert(Size::from_vec2(BRICK_SIZE / 2.))
+                .insert(Collider::Brick);
         }
         BrickType::Brick => {
             spawn(

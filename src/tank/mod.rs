@@ -1,6 +1,3 @@
-pub mod ai;
-pub mod p1;
-pub mod p2;
 use crate::{
     consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH},
     utils::{Direction, Owner},
@@ -8,15 +5,21 @@ use crate::{
 use bevy::{
     core::Timer,
     math::{const_vec2, Vec2, Vec3},
+    prelude::Component,
 };
 
+pub mod ai;
+pub mod p1;
+pub mod p2;
+
+#[derive(Component)]
 pub struct Tank {
     pub direction: Direction,
     pub owner: Owner,
     pub level: u8,
     pub shield: bool,
     pub amphibious: bool,
-    pub base_sprite: u32,
+    pub base_sprite: usize,
     pub life: u8,
 }
 
@@ -47,7 +50,9 @@ impl Default for Tank {
 pub const TANK_SPEED: f32 = HALF_BLOCK_WIDTH / 8.;
 pub const TANK_SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 pub const MAX_LEVEL: u8 = 4;
+#[derive(Component)]
 pub struct AnimationTimer(Timer);
+#[derive(Component)]
 pub struct MovementTimer(Timer);
 
 // calculate tank's x or y when a tank turns left or right

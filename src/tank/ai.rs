@@ -23,7 +23,7 @@ pub const SPAWN_POSITION3: Vec3 = const_vec3!([
     0.
 ]);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Component)]
 pub enum TankType {
     Normal,
     Light,
@@ -53,7 +53,7 @@ pub fn _spawn(
         TankType::Heavy => 120,
     };
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(index),
             texture_atlas: texture,
             transform: Transform {
@@ -63,12 +63,12 @@ pub fn _spawn(
             },
             ..Default::default()
         })
-        .with(Tank {
+        .insert(Tank {
             owner: Owner::AI,
             base_sprite: index,
             ..Default::default()
         })
-        .with(tank_type)
-        .with(Collider::Tank)
-        .with(Timer::from_seconds(0.1, true));
+        .insert(tank_type)
+        .insert(Collider::Tank)
+        .insert(Timer::from_seconds(0.1, true));
 }

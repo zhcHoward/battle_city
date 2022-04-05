@@ -26,7 +26,7 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
 /// the real function that spawns a tank after star is despawned
 pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(0),
             texture_atlas: texture,
             transform: Transform {
@@ -36,11 +36,11 @@ pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
             },
             ..Default::default()
         })
-        .with(Tank::default())
-        .with(P1)
-        .with(Collider::Tank)
-        .with(MovementTimer(Timer::from_seconds(0.01, true)))
-        .with(AnimationTimer(Timer::from_seconds(0.1, true)));
+        .insert(Tank::default())
+        .insert(P1)
+        .insert(Collider::Tank)
+        .insert(MovementTimer(Timer::from_seconds(0.01, true)))
+        .insert(AnimationTimer(Timer::from_seconds(0.1, true)));
 }
 
 /// Animation systems
@@ -65,7 +65,7 @@ pub fn animation(
         return;
     }
 
-    if timer.0.tick(time.delta_seconds()).finished() {
+    if timer.0.tick(time.delta()).finished() {
         if sprite.index % 2 == 0 {
             sprite.index += 1;
         } else {
@@ -77,7 +77,7 @@ pub fn animation(
 /// Movement system
 pub fn movement(
     time: Res<Time>,
-    commands: &mut Commands,
+    mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     textures: Res<Textures>,
     mut tank: Query<
@@ -91,8 +91,8 @@ pub fn movement(
         With<P1>,
     >,
     obstacles: Query<(Entity, &Collider, &Transform, &Size, Option<&PowerUp>), Without<P1>>,
-    mut dae_events: ResMut<Events<event::DestroyAllEnemies>>,
-    mut cbw_events: ResMut<Events<event::ChangeBaseWall>>,
+    mut dae_events: EventWriter<event::DestroyAllEnemies>,
+    mut cbw_events: EventWriter<event::ChangeBaseWall>,
 ) {
     let texture = &textures.texture;
     let result = tank.iter_mut().next();
@@ -172,11 +172,11 @@ pub fn movement(
                 ) {
                     None => (),
                     Some(_) => {
-                        commands.despawn(c_entity);
+                        commands.entity(c_entity).despawn();
                         match power_up.unwrap() {
                             PowerUp::Helmet => {
                                 tank.shield = true;
-                                shield::spawn(commands, t_entity, texture.clone());
+                                shield::spawn(&mut commands, t_entity, texture.clone());
                             }
                             PowerUp::Star => {
                                 match tank.level {
@@ -241,7 +241,7 @@ pub fn movement(
         }
     }
     let move_distance = min_distance.min(TANK_SPEED);
-    if timer.0.tick(time.delta_seconds()).finished() {
+    if timer.0.tick(time.delta()).finished() {
         match tank.direction {
             Direction::Up => t_transform.translation.y += move_distance,
             Direction::Right => t_transform.translation.x += move_distance,
@@ -252,7 +252,7 @@ pub fn movement(
 }
 
 pub fn firing(
-    commands: &mut Commands,
+    mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     textures: Res<Textures>,
     p1: Query<(&Transform, &Tank), With<P1>>,
@@ -264,6 +264,12 @@ pub fn firing(
     let (transform, tank) = result.unwrap();
     if keyboard_input.just_pressed(KeyCode::J) {
         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
-        bullet::spawn(commands, textures, bullet_pos, &tank.direction, Owner::P1)
+        bullet::spawn(
+            &mut commands,
+            textures,
+            bullet_pos,
+            &tank.direction,
+            Owner::P1,
+        )
     }
 }

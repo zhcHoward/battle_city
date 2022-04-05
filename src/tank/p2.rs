@@ -16,7 +16,7 @@ pub const SPAWN_POSITION: Vec3 = const_vec3!([
 
 pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(128),
             texture_atlas: texture,
             transform: Transform {
@@ -26,14 +26,14 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
             },
             ..Default::default()
         })
-        .with(Tank {
+        .insert(Tank {
             owner: Owner::P2,
             base_sprite: 128,
             ..Default::default()
         })
-        .with(P2)
-        .with(Collider::Tank)
-        .with(Timer::from_seconds(0.1, true));
+        .insert(P2)
+        .insert(Collider::Tank)
+        .insert(Timer::from_seconds(0.1, true));
 }
 
 pub fn animation(
@@ -57,7 +57,7 @@ pub fn animation(
         return;
     }
 
-    if timer.tick(time.delta_seconds()).just_finished() {
+    if timer.tick(time.delta()).just_finished() {
         if sprite.index % 2 == 0 {
             sprite.index += 1;
         } else {
@@ -130,7 +130,7 @@ pub fn movement(
                 size = TANK_SIZE;
             }
             _ => match sprite {
-                Some(s) => size = s.size,
+                Some(s) => size = s.custom_size.unwrap(),
                 None => {
                     println!("Collider {:?} does not have size", collider);
                     continue;

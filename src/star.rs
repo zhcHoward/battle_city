@@ -15,6 +15,7 @@ pub enum State {
     Enlarge,
 }
 
+#[derive(Component)]
 pub struct Star {
     owner: Owner,
     tank_type: Option<TankType>,
@@ -30,7 +31,7 @@ pub fn spawn(
     tank_type: Option<TankType>,
 ) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::STAR[0]),
             texture_atlas: texture,
             transform: Transform {
@@ -40,18 +41,18 @@ pub fn spawn(
             },
             ..Default::default()
         })
-        .with(Star {
+        .insert(Star {
             owner,
             done: false,
             tank_type,
             state: State::Enlarge,
         })
-        .with(Timer::from_seconds(0.1, true));
+        .insert(Timer::from_seconds(0.1, true));
 }
 
 pub fn twinkling(
     time: Res<Time>,
-    commands: &mut Commands,
+    mut commands: Commands,
     textures: Res<Textures>,
     mut stars: Query<(
         Entity,
@@ -62,7 +63,7 @@ pub fn twinkling(
     )>,
 ) {
     for (entity, mut timer, mut sprite, transform, mut star) in stars.iter_mut() {
-        if timer.tick(time.delta_seconds()).just_finished() {
+        if timer.tick(time.delta()).just_finished() {
             match sprite.index {
                 272 => {
                     if star.state == State::Shrink {
@@ -72,12 +73,12 @@ pub fn twinkling(
                 }
                 275 => match star.done {
                     true => {
-                        commands.despawn(entity);
+                        commands.entity(entity).despawn();
                         match star.owner {
-                            Owner::P1 => p1::_spawn(commands, textures.texture.clone()),
-                            Owner::P2 => p2::spawn(commands, textures.texture.clone()),
+                            Owner::P1 => p1::_spawn(&mut commands, textures.texture.clone()),
+                            Owner::P2 => p2::spawn(&mut commands, textures.texture.clone()),
                             Owner::AI => ai::_spawn(
-                                commands,
+                                &mut commands,
                                 textures.texture.clone(),
                                 transform.translation,
                                 star.tank_type.unwrap(),

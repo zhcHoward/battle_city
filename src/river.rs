@@ -8,11 +8,13 @@ use bevy::{math::const_vec2, prelude::*};
 
 const SIZE: Vec2 = const_vec2!([HALF_BLOCK_WIDTH, HALF_BLOCK_WIDTH]);
 const TIMER_INTERVAL: f32 = 0.7;
+
+#[derive(Component)]
 pub struct River;
 
 pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -26,12 +28,12 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(River)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::River)
-        .with(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(River)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::River)
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -45,12 +47,12 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(River)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::River)
-        .with(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(River)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::River)
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -64,12 +66,12 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(River)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::River)
-        .with(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(River)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::River)
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -83,15 +85,15 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(River)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::River)
-        .with(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(River)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::River)
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
 }
 
 pub fn wave(time: Res<Time>, mut query: Query<(&mut TextureAtlasSprite, &mut Timer), With<River>>) {
     for (mut sprite, mut timer) in query.iter_mut() {
-        if timer.tick(time.delta_seconds()).just_finished() {
+        if timer.tick(time.delta()).just_finished() {
             if sprite.index == SpriteIndex::RIVER[1] {
                 sprite.index += 1;
             } else {

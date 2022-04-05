@@ -7,11 +7,13 @@ use crate::{
 use bevy::{math::const_vec2, prelude::*};
 
 const SIZE: Vec2 = const_vec2!([HALF_BLOCK_WIDTH, HALF_BLOCK_WIDTH]);
+
+#[derive(Component)]
 pub struct Grass;
 
 pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -25,11 +27,11 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(Grass)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::Grass);
+        .insert(Grass)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::Grass);
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -43,11 +45,11 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(Grass)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::Grass);
+        .insert(Grass)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::Grass);
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -61,11 +63,11 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(Grass)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::Grass);
+        .insert(Grass)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::Grass);
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::GRASS[0]),
             texture_atlas: texture.clone(),
             transform: Transform {
@@ -79,7 +81,7 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             },
             ..Default::default()
         })
-        .with(Grass)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::Grass);
+        .insert(Grass)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::Grass);
 }

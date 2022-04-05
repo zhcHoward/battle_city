@@ -20,18 +20,17 @@ pub struct DestroyAllEnemies {
 }
 
 pub fn handle_destroy_all_enemies(
-    commands: &mut Commands,
-    mut event_reader: Local<EventReader<DestroyAllEnemies>>,
-    events: Res<Events<DestroyAllEnemies>>,
+    mut commands: Commands,
+    mut event_reader: EventReader<DestroyAllEnemies>,
     query: Query<(Entity, &Tank, &Transform)>,
     textures: Res<Textures>,
 ) {
-    for event in event_reader.iter(&events) {
+    for event in event_reader.iter() {
         for (entity, tank, transform) in query.iter() {
             if event.by.is_enemy(tank.owner) {
-                commands.despawn_recursive(entity); // in case tank has sub entity, like a shield
+                commands.entity(entity).despawn_recursive(); // in case tank has sub entity, like a shield
                 explosion::spawn(
-                    commands,
+                    &mut commands,
                     textures.texture.clone(),
                     transform.translation,
                     true,
@@ -64,9 +63,8 @@ pub const BaseWallPositions: [Vec3; 8] = [
 ];
 
 pub fn handle_change_base_wall(
-    commands: &mut Commands,
-    mut event_reader: Local<EventReader<ChangeBaseWall>>,
-    events: Res<Events<ChangeBaseWall>>,
+    mut commands: Commands,
+    mut event_reader: EventReader<ChangeBaseWall>,
     query: Query<
         (Entity, &Transform),
         (
@@ -81,17 +79,22 @@ pub fn handle_change_base_wall(
 ) {
     let texture = &textures.texture;
     let mut by_ai = true;
-    for event in event_reader.iter(&events) {
+    for event in event_reader.iter() {
         for (entity, transform) in query.iter() {
             let pos = transform.translation.truncate();
             if pos.cmpgt(BaseWallMin).all() && pos.cmplt(BaseWallMax).all() {
-                commands.despawn_recursive(entity);
+                commands.entity(entity).despawn_recursive();
             }
         }
         if event.by != Owner::AI {
             by_ai = false;
             for pos in &BaseWallPositions {
-                iron::spawn(commands, *pos, texture.clone(), iron::IronType::QuarterIron);
+                iron::spawn(
+                    &mut commands,
+                    *pos,
+                    texture.clone(),
+                    iron::IronType::QuarterIron,
+                );
             }
         }
         break;

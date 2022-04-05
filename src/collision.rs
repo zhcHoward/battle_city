@@ -1,7 +1,10 @@
 use crate::utils::Direction;
-use bevy::math::{Vec2, Vec3};
+use bevy::{
+    math::{Vec2, Vec3},
+    prelude::Component,
+};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Component)]
 pub enum Collider {
     Boundary, // boundary of battle field
     Brick,

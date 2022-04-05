@@ -7,11 +7,12 @@ use crate::{
 use bevy::{math::const_vec2, prelude::*};
 
 const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
+#[derive(Component)]
 pub struct Base;
 
 pub fn spawn_base1(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::BASE[0]),
             texture_atlas: texture,
             transform: Transform {
@@ -21,14 +22,14 @@ pub fn spawn_base1(commands: &mut Commands, position: Vec3, texture: Handle<Text
             },
             ..Default::default()
         })
-        .with(Base)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::Base);
+        .insert(Base)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::Base);
 }
 
 pub fn spawn_base2(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtlas>) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::BASE[1]),
             texture_atlas: texture,
             transform: Transform {
@@ -38,7 +39,7 @@ pub fn spawn_base2(commands: &mut Commands, position: Vec3, texture: Handle<Text
             },
             ..Default::default()
         })
-        .with(Base)
-        .with(Size::from_vec2(SIZE))
-        .with(Collider::Base);
+        .insert(Base)
+        .insert(Size::from_vec2(SIZE))
+        .insert(Collider::Base);
 }

@@ -1,16 +1,19 @@
+use std::time::Duration;
+
+use bevy::{math::const_vec2, prelude::*};
+
 use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, SCALE},
     texture::SpriteIndex,
     utils::Size,
 };
-use bevy::{math::const_vec2, prelude::*};
 
 pub const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
-pub const SHOVEL_DURATION: f32 = 20.; // 20 seconds
-pub const BLINK_DURATION: f32 = 3.;
+pub const SHOVEL_DURATION: Duration = Duration::from_secs(20);
+pub const BLINK_DURATION: Duration = Duration::from_secs(3);
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Component)]
 pub enum PowerUp {
     Helmet,
     Clock,
@@ -21,7 +24,7 @@ pub enum PowerUp {
     Gun,
 }
 
-impl From<PowerUp> for u32 {
+impl From<PowerUp> for usize {
     fn from(power_up: PowerUp) -> Self {
         match power_up {
             PowerUp::Helmet => SpriteIndex::POWER_UP[0],
@@ -42,7 +45,7 @@ pub fn spawn(
     texture: Handle<TextureAtlas>,
 ) {
     commands
-        .spawn(SpriteSheetBundle {
+        .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(power_up.into()),
             texture_atlas: texture,
             transform: Transform {
@@ -52,7 +55,7 @@ pub fn spawn(
             },
             ..Default::default()
         })
-        .with(power_up)
-        .with(Collider::PowerUp)
-        .with(Size::from_vec2(SIZE));
+        .insert(power_up)
+        .insert(Collider::PowerUp)
+        .insert(Size::from_vec2(SIZE));
 }
