@@ -1,7 +1,8 @@
 use crate::{
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
-    tank::{Tank, TANK_SIZE, TANK_SPEED},
+    state,
+    tank::{State, Tank, TANK_SIZE, TANK_SPEED},
     utils::{Direction, Owner, P2},
 };
 use bevy::{math::const_vec3, prelude::*};
@@ -26,26 +27,29 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
             },
             ..Default::default()
         })
-        .insert(Tank {
+        .insert(Tank)
+        .insert(P2)
+        .insert(Collider::Tank)
+        .insert(Timer::from_seconds(0.1, true))
+        .insert(state::State::Tank(State {
             owner: Owner::P2,
             base_sprite: 128,
             ..Default::default()
-        })
-        .insert(P2)
-        .insert(Collider::Tank)
-        .insert(Timer::from_seconds(0.1, true));
+        }));
 }
 
 pub fn animation(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &Tank), With<P2>>,
+    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &state::State), With<P2>>,
 ) {
     let result = query.iter_mut().next();
     if result.is_none() {
         return;
     }
-    let (mut timer, mut sprite, tank) = result.unwrap();
+    let (mut timer, mut sprite, state) = result.unwrap();
+    let tank = state.as_tank();
+
     let moving = match tank.direction {
         Direction::Up => keyboard_input.pressed(DIRECTION_KEYS[0]),
         Direction::Right => keyboard_input.pressed(DIRECTION_KEYS[1]),
@@ -69,14 +73,15 @@ pub fn animation(
 /// Movement system
 pub fn movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut tank: Query<(&mut Transform, &mut TextureAtlasSprite, &mut Tank), With<P2>>,
+    mut tank: Query<(&mut Transform, &mut TextureAtlasSprite, &mut state::State), With<P2>>,
     obstacles: Query<(&Collider, &Transform, Option<&Sprite>), Without<P2>>,
 ) {
     let result = tank.iter_mut().next();
     if result.is_none() {
         return;
     }
-    let (mut t_transform, mut t_sprite, mut tank) = result.unwrap();
+    let (mut t_transform, mut t_sprite, mut state) = result.unwrap();
+    let tank = state.as_mut_tank();
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
         t_sprite.index = 128;
         tank.direction = Direction::Up;

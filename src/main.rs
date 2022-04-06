@@ -15,6 +15,7 @@ mod river;
 mod shield;
 mod snow;
 mod star;
+mod state;
 mod tank;
 mod texture;
 mod utils;
@@ -123,7 +124,7 @@ fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
             ..Default::default()
         })
         .insert(Collider::Boundary)
-        .insert(Size::from_vec2(left_size));
+        .insert(state::State::Boundary);
     // right
     commands
         .spawn_bundle(SpriteBundle {
@@ -136,7 +137,7 @@ fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
             ..Default::default()
         })
         .insert(Collider::Boundary)
-        .insert(Size::from_vec2(right_size));
+        .insert(state::State::Boundary);
     // top
     commands
         .spawn_bundle(SpriteBundle {
@@ -149,7 +150,7 @@ fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
             ..Default::default()
         })
         .insert(Collider::Boundary)
-        .insert(Size::from_vec2(top_size));
+        .insert(state::State::Boundary);
     // bottom
     commands
         .spawn_bundle(SpriteBundle {
@@ -162,7 +163,7 @@ fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
             ..Default::default()
         })
         .insert(Collider::Boundary)
-        .insert(Size::from_vec2(top_size));
+        .insert(state::State::Boundary);
 
     brick::spawn(
         &mut commands,

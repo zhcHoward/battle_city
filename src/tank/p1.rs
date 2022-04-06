@@ -4,8 +4,10 @@ use crate::{
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     event,
     power_up::PowerUp,
-    shield, star,
-    tank::{cal_position, AnimationTimer, MovementTimer, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED},
+    shield, star, state,
+    tank::{
+        cal_position, AnimationTimer, MovementTimer, State, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED,
+    },
     texture::Textures,
     utils::{Direction, Owner, Size, P1},
 };
@@ -36,24 +38,26 @@ pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
             },
             ..Default::default()
         })
-        .insert(Tank::default())
+        .insert(Tank)
         .insert(P1)
         .insert(Collider::Tank)
         .insert(MovementTimer(Timer::from_seconds(0.01, true)))
-        .insert(AnimationTimer(Timer::from_seconds(0.1, true)));
+        .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
+        .insert(state::State::Tank(State::default()));
 }
 
 /// Animation systems
 pub fn animation(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut AnimationTimer, &mut TextureAtlasSprite, &Tank), With<P1>>,
+    mut query: Query<(&mut AnimationTimer, &mut TextureAtlasSprite, &state::State), With<P1>>,
 ) {
     let result = query.iter_mut().next();
     if result.is_none() {
         return;
     }
-    let (mut timer, mut sprite, tank) = result.unwrap();
+    let (mut timer, mut sprite, state) = result.unwrap();
+    let tank = state.as_tank();
     let moving = match tank.direction {
         Direction::Up => keyboard_input.pressed(DIRECTION_KEYS[0]),
         Direction::Right => keyboard_input.pressed(DIRECTION_KEYS[1]),
@@ -85,7 +89,7 @@ pub fn movement(
             Entity,
             &mut Transform,
             &mut TextureAtlasSprite,
-            &mut Tank,
+            &mut state::State,
             &mut MovementTimer,
         ),
         With<P1>,
@@ -99,7 +103,8 @@ pub fn movement(
     if result.is_none() {
         return;
     }
-    let (t_entity, mut t_transform, mut t_sprite, mut tank, mut timer) = result.unwrap();
+    let (t_entity, mut t_transform, mut t_sprite, mut state, mut timer) = result.unwrap();
+    let tank = state.as_mut_tank();
 
     // The center of battle field is (-HALF_BLOCK_WIDTH, 0)
     if keyboard_input.just_pressed(DIRECTION_KEYS[0]) && tank.direction != Direction::Up {
@@ -255,13 +260,14 @@ pub fn firing(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     textures: Res<Textures>,
-    p1: Query<(&Transform, &Tank), With<P1>>,
+    p1: Query<(&Transform, &state::State), With<P1>>,
 ) {
     let result = p1.iter().next();
     if result.is_none() {
         return;
     }
-    let (transform, tank) = result.unwrap();
+    let (transform, state) = result.unwrap();
+    let tank = state.as_tank();
     if keyboard_input.just_pressed(KeyCode::J) {
         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
         bullet::spawn(

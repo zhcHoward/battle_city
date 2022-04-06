@@ -13,7 +13,10 @@ pub mod p1;
 pub mod p2;
 
 #[derive(Component)]
-pub struct Tank {
+pub struct Tank;
+
+#[derive(Debug)]
+pub struct State {
     pub direction: Direction,
     pub owner: Owner,
     pub level: u8,
@@ -23,7 +26,7 @@ pub struct Tank {
     pub life: u8,
 }
 
-impl Tank {
+impl State {
     pub fn new(direction: Direction, owner: Owner) -> Self {
         Self {
             direction,
@@ -33,7 +36,7 @@ impl Tank {
     }
 }
 
-impl Default for Tank {
+impl Default for State {
     fn default() -> Self {
         Self {
             direction: Direction::Up,

@@ -9,7 +9,7 @@ use crate::{
     brick::{Brick, BrickType},
     collision::Collider,
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, SCALE},
-    explosion,
+    explosion, state,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
     texture::{SpriteIndex, Textures},
     utils::{Direction, Owner, Size, AI, P1, P2},
@@ -19,8 +19,11 @@ const BULLET_POS: f32 = 10. * SCALE;
 const BULLET_SPEED: f32 = TANK_SPEED + 1.;
 pub const BULLET_SIZE: Vec2 = const_vec2!([4. * SCALE, 4. * SCALE]);
 
-#[derive(Debug, Component)]
-pub struct Bullet {
+#[derive(Component)]
+pub struct Bullet;
+
+#[derive(Debug)]
+pub struct State {
     pub direction: Direction,
     pub speed: f32,
     pub source: Owner,
@@ -59,13 +62,14 @@ pub fn spawn(
         ..Default::default()
     });
     bullet
-        .insert(Bullet {
+        .insert(Bullet)
+        .insert(Collider::Bullet)
+        .insert(Timer::from_seconds(0.01, true))
+        .insert(state::State::Bullet(State {
             direction: *direction,
             speed: BULLET_SPEED,
             source: source.clone(),
-        })
-        .insert(Collider::Bullet)
-        .insert(Timer::from_seconds(0.01, true));
+        }));
 
     // add additional mark for the bullet, makes querying for bullet easier
     match source {
@@ -76,14 +80,18 @@ pub fn spawn(
 }
 
 // Movement system
-pub fn movement(time: Res<Time>, mut bullets: Query<(&mut Timer, &mut Transform, &Bullet)>) {
-    for (mut timer, mut transform, bullet) in bullets.iter_mut() {
+pub fn movement(
+    time: Res<Time>,
+    mut bullets: Query<(&mut Timer, &mut Transform, &state::State), With<Bullet>>,
+) {
+    for (mut timer, mut transform, state) in bullets.iter_mut() {
         if timer.tick(time.delta()).finished() {
-            transform.translation += match bullet.direction {
-                Direction::Up => Vec3::Y * bullet.speed,
-                Direction::Right => Vec3::X * bullet.speed,
-                Direction::Down => Vec3::Y * -bullet.speed,
-                Direction::Left => Vec3::X * -bullet.speed,
+            let b_state = state.as_bullet();
+            transform.translation += match b_state.direction {
+                Direction::Up => Vec3::Y * b_state.speed,
+                Direction::Right => Vec3::X * b_state.speed,
+                Direction::Down => Vec3::Y * -b_state.speed,
+                Direction::Left => Vec3::X * -b_state.speed,
             };
         }
     }
@@ -94,11 +102,12 @@ pub fn collision(
     mut commands: Commands,
     textures: Res<Textures>,
     texture_atlases: Res<Assets<TextureAtlas>>,
-    bullets: Query<(Entity, &Transform, &Bullet)>,
+    bullets: Query<(Entity, &Transform, &state::State), With<Bullet>>,
     colliders: Query<(
         Entity,
         &Collider,
         &Transform,
+        &state::State,
         Option<&Sprite>,
         Option<&TextureAtlasSprite>,
         // Option<&Size>,
@@ -107,8 +116,8 @@ pub fn collision(
 ) {
     let mut size;
     let texture = &textures.texture;
-    for (b_entity, b_transform, bullet) in bullets.iter() {
-        for (c_entity, collider, c_transform, sprite, atlas_sprite) in colliders.iter() {
+    for (b_entity, b_transform, b_state) in bullets.iter() {
+        for (c_entity, collider, c_transform, c_state, sprite, atlas_sprite) in colliders.iter() {
             if b_entity == c_entity {
                 continue;
             }
@@ -150,7 +159,7 @@ pub fn collision(
                         false,
                     );
                     let pos = c_transform.translation;
-                    match c_brick.unwrap().b_type {
+                    match c_state.as_brick().b_type {
                         BrickType::Brick => unreachable!(), // a Brick is actually 4 QuarterBrick
                         BrickType::QuarterBrick => match collision {
                             Collision::Top => brick::spawn(
@@ -239,7 +248,7 @@ pub fn collision(
                             ),
                         },
                         BrickType::MinBrick1 | BrickType::MinBrick2 => (),
-                    };
+                    }
                 }
                 Collider::Iron => {
                     commands.entity(b_entity).despawn();
@@ -253,7 +262,7 @@ pub fn collision(
                 }
                 Collider::Boundary => {
                     commands.entity(b_entity).despawn();
-                    let pos = match bullet.direction {
+                    let pos = match c_state.as_bullet().direction {
                         Direction::Up => {
                             Vec3::new(b_transform.translation.x, BATTLE_FIELD_WIDTH / 2., 0.)
                         }
@@ -282,7 +291,8 @@ pub fn collision(
                     // TODO: Game Over
                 }
                 Collider::Bullet => {
-                    let c_bullet = c_bullet.unwrap();
+                    let c_bullet = c_state.as_bullet();
+                    let bullet = b_state.as_bullet();
                     if c_bullet.source == bullet.source {
                         continue;
                     }
@@ -290,7 +300,8 @@ pub fn collision(
                     commands.entity(c_entity).despawn();
                 }
                 Collider::Tank => {
-                    let tank = tank.unwrap();
+                    let tank = c_state.as_tank();
+                    let bullet = b_state.as_bullet();
                     match bullet.source {
                         Owner::P1 => match tank.owner {
                             Owner::P1 => continue,

@@ -3,18 +3,17 @@ use bevy::{math::const_vec2, prelude::*};
 use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    state,
     texture::SpriteIndex,
     utils::Size,
 };
 
 pub const BRICK_SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 
-#[derive(Component, Bundle)]
-pub struct Brick {
-    pub b_type: BrickType,
-}
-
 #[derive(Component)]
+pub struct Brick;
+
+#[derive(Debug)]
 pub enum BrickType {
     Brick,
     QuarterBrick,
@@ -24,6 +23,11 @@ pub enum BrickType {
     HalfQuarterBrickLeft,
     MinBrick1,
     MinBrick2,
+}
+
+#[derive(Debug)]
+pub struct State {
+    pub b_type: BrickType,
 }
 
 pub fn spawn(
@@ -45,11 +49,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::MinBrick1,
-                })
-                .insert(Size::from_vec2(BRICK_SIZE / 4.))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::MinBrick2 => {
             commands
@@ -63,11 +65,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::MinBrick2,
-                })
-                .insert(Size::from_vec2(BRICK_SIZE / 4.))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::HalfQuarterBrickTop => {
             commands
@@ -81,11 +81,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::HalfQuarterBrickTop,
-                })
-                .insert(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::HalfQuarterBrickRight => {
             commands
@@ -99,11 +97,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::HalfQuarterBrickRight,
-                })
-                .insert(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::HalfQuarterBrickBottom => {
             commands
@@ -117,11 +113,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::HalfQuarterBrickBottom,
-                })
-                .insert(Size::new(HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::HalfQuarterBrickLeft => {
             commands
@@ -135,11 +129,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::HalfQuarterBrickLeft,
-                })
-                .insert(Size::new(MIN_BLOCK_WIDTH, HALF_BLOCK_WIDTH))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::QuarterBrick => {
             commands
@@ -153,11 +145,9 @@ pub fn spawn(
                     },
                     ..Default::default()
                 })
-                .insert(Brick {
-                    b_type: BrickType::QuarterBrick,
-                })
-                .insert(Size::from_vec2(BRICK_SIZE / 2.))
-                .insert(Collider::Brick);
+                .insert(Brick)
+                .insert(Collider::Brick)
+                .insert(state::State::Brick(State { b_type }));
         }
         BrickType::Brick => {
             spawn(

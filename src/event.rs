@@ -6,6 +6,7 @@ use crate::{
     game_data::GameData,
     iron,
     shield::Shield,
+    state::State,
     tank::Tank,
     texture::Textures,
     utils::Owner,
@@ -22,11 +23,12 @@ pub struct DestroyAllEnemies {
 pub fn handle_destroy_all_enemies(
     mut commands: Commands,
     mut event_reader: EventReader<DestroyAllEnemies>,
-    query: Query<(Entity, &Tank, &Transform)>,
+    query: Query<(Entity, &State, &Transform), With<Tank>>,
     textures: Res<Textures>,
 ) {
     for event in event_reader.iter() {
-        for (entity, tank, transform) in query.iter() {
+        for (entity, state, transform) in query.iter() {
+            let tank = state.as_tank();
             if event.by.is_enemy(tank.owner) {
                 commands.entity(entity).despawn_recursive(); // in case tank has sub entity, like a shield
                 explosion::spawn(

@@ -1,8 +1,8 @@
 use crate::{
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
-    star,
-    tank::{Tank, TANK_SIZE, TANK_SPEED},
+    star, state,
+    tank::{State, Tank, TANK_SIZE, TANK_SPEED},
     utils::{Direction, Owner},
 };
 use bevy::{math::const_vec3, prelude::*};
@@ -63,12 +63,13 @@ pub fn _spawn(
             },
             ..Default::default()
         })
-        .insert(Tank {
+        .insert(Tank)
+        .insert(tank_type)
+        .insert(Collider::Tank)
+        .insert(Timer::from_seconds(0.1, true))
+        .insert(state::State::Tank(State {
             owner: Owner::AI,
             base_sprite: index,
             ..Default::default()
-        })
-        .insert(tank_type)
-        .insert(Collider::Tank)
-        .insert(Timer::from_seconds(0.1, true));
+        }));
 }
