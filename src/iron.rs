@@ -2,7 +2,6 @@ use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
     texture::SpriteIndex,
-    utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
 
@@ -35,7 +34,6 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Size::from_vec2(SIZE))
                 .insert(Collider::Iron);
         }
         IronType::Iron => {
@@ -55,7 +53,6 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Size::from_vec2(SIZE))
                 .insert(Collider::Iron);
             commands
                 .spawn_bundle(SpriteSheetBundle {
@@ -73,7 +70,6 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Size::from_vec2(SIZE))
                 .insert(Collider::Iron);
             commands
                 .spawn_bundle(SpriteSheetBundle {
@@ -91,7 +87,6 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Size::from_vec2(SIZE))
                 .insert(Collider::Iron);
             commands
                 .spawn_bundle(SpriteSheetBundle {
@@ -109,7 +104,6 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Size::from_vec2(SIZE))
                 .insert(Collider::Iron);
         }
     }

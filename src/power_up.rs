@@ -5,16 +5,19 @@ use bevy::{math::const_vec2, prelude::*};
 use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, SCALE},
+    state,
     texture::SpriteIndex,
-    utils::Size,
 };
 
 pub const SIZE: Vec2 = const_vec2!([BLOCK_WIDTH, BLOCK_WIDTH]);
 pub const SHOVEL_DURATION: Duration = Duration::from_secs(20);
 pub const BLINK_DURATION: Duration = Duration::from_secs(3);
 
-#[derive(Debug, Copy, Clone, Component)]
-pub enum PowerUp {
+#[derive(Component)]
+pub struct PowerUp;
+
+#[derive(Debug, Clone, Copy)]
+pub enum PowerType {
     Helmet,
     Clock,
     Shovel,
@@ -24,16 +27,16 @@ pub enum PowerUp {
     Gun,
 }
 
-impl From<PowerUp> for usize {
-    fn from(power_up: PowerUp) -> Self {
+impl From<PowerType> for usize {
+    fn from(power_up: PowerType) -> Self {
         match power_up {
-            PowerUp::Helmet => SpriteIndex::POWER_UP[0],
-            PowerUp::Clock => SpriteIndex::POWER_UP[1],
-            PowerUp::Shovel => SpriteIndex::POWER_UP[2],
-            PowerUp::Star => SpriteIndex::POWER_UP[3],
-            PowerUp::Grenade => SpriteIndex::POWER_UP[4],
-            PowerUp::Tank => SpriteIndex::POWER_UP[5],
-            PowerUp::Gun => SpriteIndex::POWER_UP[6],
+            PowerType::Helmet => SpriteIndex::POWER_UP[0],
+            PowerType::Clock => SpriteIndex::POWER_UP[1],
+            PowerType::Shovel => SpriteIndex::POWER_UP[2],
+            PowerType::Star => SpriteIndex::POWER_UP[3],
+            PowerType::Grenade => SpriteIndex::POWER_UP[4],
+            PowerType::Tank => SpriteIndex::POWER_UP[5],
+            PowerType::Gun => SpriteIndex::POWER_UP[6],
         }
     }
 }
@@ -41,12 +44,12 @@ impl From<PowerUp> for usize {
 pub fn spawn(
     commands: &mut Commands,
     position: Vec3,
-    power_up: PowerUp,
+    p_type: PowerType,
     texture: Handle<TextureAtlas>,
 ) {
     commands
         .spawn_bundle(SpriteSheetBundle {
-            sprite: TextureAtlasSprite::new(power_up.into()),
+            sprite: TextureAtlasSprite::new(p_type.into()),
             texture_atlas: texture,
             transform: Transform {
                 translation: position,
@@ -55,7 +58,7 @@ pub fn spawn(
             },
             ..Default::default()
         })
-        .insert(power_up)
+        .insert(PowerUp)
         .insert(Collider::PowerUp)
-        .insert(Size::from_vec2(SIZE));
+        .insert(state::State::PowerUp(p_type));
 }

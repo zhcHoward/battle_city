@@ -12,7 +12,7 @@ use crate::{
     explosion, state,
     tank::{Tank, TANK_SIZE, TANK_SPEED},
     texture::{SpriteIndex, Textures},
-    utils::{Direction, Owner, Size, AI, P1, P2},
+    utils::{Direction, Owner, AI, P1, P2},
 };
 
 const BULLET_POS: f32 = 10. * SCALE;
@@ -121,7 +121,6 @@ pub fn collision(
             if b_entity == c_entity {
                 continue;
             }
-            let c = commands.entity(b_entity);
             size = match collider {
                 // Collider::Tank | Collider::Base => TANK_SIZE,
                 // Collider::Bullet => BULLET_SIZE,
@@ -262,7 +261,7 @@ pub fn collision(
                 }
                 Collider::Boundary => {
                     commands.entity(b_entity).despawn();
-                    let pos = match c_state.as_bullet().direction {
+                    let pos = match b_state.as_bullet().direction {
                         Direction::Up => {
                             Vec3::new(b_transform.translation.x, BATTLE_FIELD_WIDTH / 2., 0.)
                         }
@@ -300,6 +299,7 @@ pub fn collision(
                     commands.entity(c_entity).despawn();
                 }
                 Collider::Tank => {
+                    println!("{:?}", collider);
                     let tank = c_state.as_tank();
                     let bullet = b_state.as_bullet();
                     match bullet.source {

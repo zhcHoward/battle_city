@@ -2,7 +2,6 @@ use crate::{
     collision::Collider,
     consts::{BLOCK_WIDTH, SCALE},
     texture::SpriteIndex,
-    utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
 
@@ -23,7 +22,6 @@ pub fn spawn_base1(commands: &mut Commands, position: Vec3, texture: Handle<Text
             ..Default::default()
         })
         .insert(Base)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Base);
 }
 
@@ -40,6 +38,5 @@ pub fn spawn_base2(commands: &mut Commands, position: Vec3, texture: Handle<Text
             ..Default::default()
         })
         .insert(Base)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Base);
 }

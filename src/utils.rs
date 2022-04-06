@@ -23,31 +23,6 @@ impl Direction {
     }
 }
 
-#[derive(Component)]
-pub struct Size(Vec2);
-
-impl Size {
-    pub fn new(width: f32, height: f32) -> Self {
-        Self(Vec2::new(width, height))
-    }
-
-    pub fn from_vec2(size: Vec2) -> Self {
-        Self(size)
-    }
-
-    pub fn width(&self) -> f32 {
-        self.0.x
-    }
-
-    pub fn height(&self) -> f32 {
-        self.0.y
-    }
-
-    pub fn size(&self) -> Vec2 {
-        self.0
-    }
-}
-
 #[derive(Debug, PartialEq, Copy, Clone, Component)]
 pub enum Owner {
     P1,

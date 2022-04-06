@@ -3,13 +3,13 @@ use crate::{
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     event,
-    power_up::PowerUp,
+    power_up::PowerType,
     shield, star, state,
     tank::{
         cal_position, AnimationTimer, MovementTimer, State, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED,
     },
     texture::Textures,
-    utils::{Direction, Owner, Size, P1},
+    utils::{Direction, Owner, P1},
 };
 use bevy::{math::const_vec3, prelude::*, sprite::collide_aabb};
 
@@ -84,6 +84,7 @@ pub fn movement(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     textures: Res<Textures>,
+    texture_atlas: Res<Assets<TextureAtlas>>,
     mut tank: Query<
         (
             Entity,
@@ -94,7 +95,17 @@ pub fn movement(
         ),
         With<P1>,
     >,
-    obstacles: Query<(Entity, &Collider, &Transform, &Size, Option<&PowerUp>), Without<P1>>,
+    obstacles: Query<
+        (
+            Entity,
+            &Collider,
+            &Transform,
+            &state::State,
+            Option<&Sprite>,
+            Option<&TextureAtlasSprite>,
+        ),
+        Without<P1>,
+    >,
     mut dae_events: EventWriter<event::DestroyAllEnemies>,
     mut cbw_events: EventWriter<event::ChangeBaseWall>,
 ) {
@@ -165,25 +176,25 @@ pub fn movement(
 
     let mut size;
     let mut min_distance = BATTLE_FIELD_WIDTH; // a large float number
-    for (c_entity, collider, transform, c_size, power_up) in obstacles.iter() {
+    for (c_entity, collider, transform, state, sprite, atlas_sprite) in obstacles.iter() {
         match collider {
-            Collider::Grass | Collider::Snow | Collider::Bullet => continue,
+            Collider::Grass | Collider::Snow | Collider::Bullet => continue, // hit bullet is handled in bullet.rs
             Collider::PowerUp => {
                 match collide_aabb::collide(
                     t_transform.translation,
                     TANK_SIZE,
                     transform.translation,
-                    c_size.size(),
+                    TANK_SIZE, // power ups and tanks share same size. TODO: change a better name
                 ) {
                     None => (),
                     Some(_) => {
                         commands.entity(c_entity).despawn();
-                        match power_up.unwrap() {
-                            PowerUp::Helmet => {
+                        match state.as_power_up() {
+                            PowerType::Helmet => {
                                 tank.shield = true;
                                 shield::spawn(&mut commands, t_entity, texture.clone());
                             }
-                            PowerUp::Star => {
+                            PowerType::Star => {
                                 match tank.level {
                                     3 => tank.level += 1, // level 4 can remove grass
                                     0 | 1 | 2 => {
@@ -194,7 +205,7 @@ pub fn movement(
                                     _ => (),
                                 };
                             }
-                            PowerUp::Gun => {
+                            PowerType::Gun => {
                                 tank.base_sprite = 48; // TODO: set base_sprite with const variable instead of manually set to 48
                                 tank.level = MAX_LEVEL.min(tank.level + 3);
                                 t_sprite.index = match tank.direction {
@@ -204,16 +215,16 @@ pub fn movement(
                                     Direction::Left => 50,
                                 };
                             }
-                            PowerUp::Tank => {
+                            PowerType::Tank => {
                                 if tank.life < 99 {
                                     tank.life += 1;
                                 }
                             }
-                            PowerUp::Clock => (), // TODO: freeze all ai tanks on battle field
-                            PowerUp::Shovel => {
+                            PowerType::Clock => (), // TODO: freeze all ai tanks on battle field
+                            PowerType::Shovel => {
                                 cbw_events.send(event::ChangeBaseWall { by: tank.owner });
                             }
-                            PowerUp::Grenade => {
+                            PowerType::Grenade => {
                                 dae_events.send(event::DestroyAllEnemies { by: tank.owner });
                             }
                         }
@@ -221,10 +232,15 @@ pub fn movement(
                 };
                 continue;
             }
-            Collider::Tank => {
-                size = TANK_SIZE;
+            Collider::Boundary => {
+                size = sprite.unwrap().custom_size.unwrap();
             }
-            _ => size = c_size.size(),
+            _ => {
+                let index = atlas_sprite.unwrap().index;
+                let texture_atlas = texture_atlas.get(texture).unwrap();
+                let sprite = texture_atlas.textures.get(index).unwrap();
+                size = sprite.size()
+            }
         }
         match collide(
             t_transform.translation,
@@ -260,13 +276,14 @@ pub fn firing(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     textures: Res<Textures>,
-    p1: Query<(&Transform, &state::State), With<P1>>,
+    p1: Query<(&Transform, &state::State), (With<P1>, With<Tank>)>, // must use 2 With to get rid of P1 bullets
 ) {
     let result = p1.iter().next();
     if result.is_none() {
         return;
     }
     let (transform, state) = result.unwrap();
+    println!("state {:?}", state);
     let tank = state.as_tank();
     if keyboard_input.just_pressed(KeyCode::J) {
         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);

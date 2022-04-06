@@ -2,11 +2,8 @@ use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
     texture::SpriteIndex,
-    utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
-
-const SIZE: Vec2 = const_vec2!([HALF_BLOCK_WIDTH, HALF_BLOCK_WIDTH]);
 
 #[derive(Component)]
 pub struct Grass;
@@ -28,7 +25,6 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Grass)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Grass);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -46,7 +42,6 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Grass)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Grass);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -64,7 +59,6 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Grass)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Grass);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -82,6 +76,5 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Grass)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Grass);
 }

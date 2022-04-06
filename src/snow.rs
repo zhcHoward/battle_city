@@ -2,7 +2,6 @@ use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
     texture::SpriteIndex,
-    utils::Size,
 };
 use bevy::{math::const_vec2, prelude::*};
 
@@ -27,7 +26,6 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Snow)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Snow);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -45,7 +43,6 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Snow)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Snow);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -63,7 +60,6 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Snow)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Snow);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -81,6 +77,5 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
             ..Default::default()
         })
         .insert(Snow)
-        .insert(Size::from_vec2(SIZE))
         .insert(Collider::Snow);
 }

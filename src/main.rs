@@ -27,7 +27,7 @@ use consts::{
 use game_data::GameData;
 use tank::{ai, p1, p2};
 use texture::{load_texture_atlas, Textures};
-use utils::{block2translation as b2t, Size};
+use utils::block2translation as b2t;
 
 fn main() {
     let mut app = App::new();
@@ -186,43 +186,43 @@ fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(-3., 1.), 0.),
-        power_up::PowerUp::Helmet,
+        power_up::PowerType::Helmet,
         texture.clone(),
     );
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(-2., 1.), 0.),
-        power_up::PowerUp::Clock,
+        power_up::PowerType::Clock,
         texture.clone(),
     );
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(-1., 1.), 0.),
-        power_up::PowerUp::Shovel,
+        power_up::PowerType::Shovel,
         texture.clone(),
     );
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(0., 1.), 0.),
-        power_up::PowerUp::Star,
+        power_up::PowerType::Star,
         texture.clone(),
     );
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(1., 1.), 0.),
-        power_up::PowerUp::Grenade,
+        power_up::PowerType::Grenade,
         texture.clone(),
     );
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(2., 1.), 0.),
-        power_up::PowerUp::Tank,
+        power_up::PowerType::Tank,
         texture.clone(),
     );
     power_up::spawn(
         &mut commands,
         b2t(Vec2::new(3., 1.), 0.),
-        power_up::PowerUp::Gun,
+        power_up::PowerType::Gun,
         texture.clone(),
     );
 }
