@@ -283,7 +283,6 @@ pub fn firing(
         return;
     }
     let (transform, state) = result.unwrap();
-    println!("state {:?}", state);
     let tank = state.as_tank();
     if keyboard_input.just_pressed(KeyCode::J) {
         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);

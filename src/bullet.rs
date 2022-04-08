@@ -299,7 +299,6 @@ pub fn collision(
                     commands.entity(c_entity).despawn();
                 }
                 Collider::Tank => {
-                    println!("{:?}", collider);
                     let tank = c_state.as_tank();
                     let bullet = b_state.as_bullet();
                     match bullet.source {

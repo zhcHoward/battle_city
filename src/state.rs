@@ -27,20 +27,14 @@ impl State {
     pub fn as_bullet(&self) -> &bullet::State {
         match self {
             State::Bullet(state) => state,
-            _ => {
-                println!("{:?}", self);
-                unreachable!();
-            }
+            _ => unreachable!(),
         }
     }
 
     pub fn as_tank(&self) -> &tank::State {
         match self {
             State::Tank(state) => state,
-            _ => {
-                println!("{:?}", self);
-                unreachable!();
-            }
+            _ => unreachable!(),
         }
     }
 
