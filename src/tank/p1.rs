@@ -292,7 +292,8 @@ pub fn firing(
             textures,
             bullet_pos,
             &tank.direction,
-            Owner::P1,
+            tank.owner,
+            tank.level,
         )
     }
 }

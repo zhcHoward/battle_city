@@ -29,6 +29,7 @@ pub struct State {
     pub direction: Direction,
     pub speed: f32,
     pub source: Owner,
+    pub level: u8,
 }
 
 pub fn cal_position(tank_pos: &Vec3, direction: &Direction) -> Vec3 {
@@ -46,6 +47,7 @@ pub fn spawn(
     position: Vec3,
     direction: &Direction,
     source: Owner,
+    level: u8,
 ) {
     let sprite_index = match direction {
         Direction::Up => SpriteIndex::BULLET[0],
@@ -71,6 +73,7 @@ pub fn spawn(
             direction: *direction,
             speed: BULLET_SPEED,
             source: source.clone(),
+            level: level,
         }));
 
     // add additional mark for the bullet, makes querying for bullet easier
@@ -123,8 +126,6 @@ pub fn collision(
                 continue;
             }
             size = match collider {
-                // Collider::Tank | Collider::Base => TANK_SIZE,
-                // Collider::Bullet => BULLET_SIZE,
                 Collider::Boundary => sprite.unwrap().custom_size.unwrap(),
                 _ => {
                     let index = atlas_sprite.unwrap().index;
@@ -259,7 +260,10 @@ pub fn collision(
                         b_transform.translation,
                         false,
                     );
-                    // TODO: destroy Iron if tank has enough power
+                    let bullet = b_state.as_bullet();
+                    if bullet.level > 2 {
+                        commands.entity(c_entity).despawn();
+                    }
                 }
                 Collider::Boundary => {
                     bullets_to_despawn.insert(b_entity);
