@@ -239,7 +239,7 @@ pub fn movement(
                 let index = atlas_sprite.unwrap().index;
                 let texture_atlas = texture_atlas.get(texture).unwrap();
                 let sprite = texture_atlas.textures.get(index).unwrap();
-                size = sprite.size()
+                size = sprite.size() * SCALE
             }
         }
         match collide(

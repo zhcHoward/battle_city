@@ -127,10 +127,10 @@ pub fn collision(
                     let index = atlas_sprite.unwrap().index;
                     let texture_atlas = texture_atlases.get(texture).unwrap();
                     let sprite = texture_atlas.textures.get(index).unwrap();
-                    sprite.size()
+                    sprite.size() * SCALE
                 }
             };
-            println!("state: {:?}, size: {}", c_state, size);
+
             let collision = collide(
                 b_transform.translation,
                 BULLET_SIZE,

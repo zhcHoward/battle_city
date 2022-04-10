@@ -22,7 +22,7 @@ pub enum Collider {
 ///
 /// a is tank and b is obstacle
 /// If zero is returned, it means a is next to b so a should not move forward any more.
-/// Otherwise, they are still some distance between a and b.
+/// Otherwise, there are still some distance between a and b.
 pub fn collide(
     a_pos: Vec3,
     a_size: Vec2,
