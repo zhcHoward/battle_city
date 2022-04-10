@@ -4,7 +4,7 @@ use crate::{
     state,
     texture::SpriteIndex,
 };
-use bevy::{math::const_vec2, prelude::*};
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Iron;

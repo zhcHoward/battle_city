@@ -55,8 +55,9 @@ fn main() {
     .add_plugins(DefaultPlugins)
     .add_event::<event::DestroyAllEnemies>()
     .add_system(event::handle_destroy_all_enemies)
-    .add_event::<event::ChangeBaseWall>()
-    .add_system(event::handle_change_base_wall)
+    .add_event::<base::wall::ChangeBaseWall>()
+    .add_system(base::wall::handle_change_base_wall)
+    .add_system(base::wall::change_basewall_count_down)
     .run();
 }
 
@@ -181,7 +182,12 @@ fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {
     grass::spawn(&mut commands, b2t(Vec2::new(-1., 0.), 1.), texture.clone());
     snow::spawn(&mut commands, b2t(Vec2::new(0., -1.), 0.), texture.clone());
     river::spawn(&mut commands, b2t(Vec2::new(1., -1.), 0.), texture.clone());
-    base::spawn_base1(&mut commands, b2t(Vec2::new(0., -6.), 0.), texture.clone());
+    base::spawn(
+        &mut commands,
+        b2t(Vec2::new(0., -6.), 0.),
+        texture.clone(),
+        false,
+    );
 
     power_up::spawn(
         &mut commands,

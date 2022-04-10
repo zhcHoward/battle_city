@@ -1,4 +1,5 @@
 use crate::{
+    base::wall::ChangeBaseWall,
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
@@ -107,7 +108,7 @@ pub fn movement(
         Without<P1>,
     >,
     mut dae_events: EventWriter<event::DestroyAllEnemies>,
-    mut cbw_events: EventWriter<event::ChangeBaseWall>,
+    mut cbw_events: EventWriter<ChangeBaseWall>,
 ) {
     let texture = &textures.texture;
     let result = tank.iter_mut().next();
@@ -222,7 +223,7 @@ pub fn movement(
                             }
                             PowerType::Clock => (), // TODO: freeze all ai tanks on battle field
                             PowerType::Shovel => {
-                                cbw_events.send(event::ChangeBaseWall { by: tank.owner });
+                                cbw_events.send(ChangeBaseWall { by: tank.owner });
                             }
                             PowerType::Grenade => {
                                 dae_events.send(event::DestroyAllEnemies { by: tank.owner });

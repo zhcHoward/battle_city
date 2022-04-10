@@ -285,7 +285,12 @@ pub fn collision(
                         b_transform.translation,
                         false,
                     );
-                    base::spawn_base2(&mut commands, c_transform.translation, texture.clone());
+                    base::spawn(
+                        &mut commands,
+                        c_transform.translation,
+                        texture.clone(),
+                        true,
+                    );
                     // TODO: Game Over
                 }
                 Collider::Bullet => {
