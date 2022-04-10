@@ -23,7 +23,6 @@ pub struct State {
     pub shield: bool,
     pub amphibious: bool,
     pub base_sprite: usize,
-    pub life: u8,
 }
 
 impl State {
@@ -45,7 +44,6 @@ impl Default for State {
             shield: false,
             amphibious: false,
             base_sprite: 0,
-            life: 2,
         }
     }
 }

@@ -1,9 +1,12 @@
+use bevy::{math::const_vec3, prelude::*, sprite::collide_aabb};
+
 use crate::{
     base::wall::ChangeBaseWall,
     bullet,
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     event,
+    game_data::GameData,
     power_up::PowerType,
     shield, star, state,
     tank::{
@@ -12,7 +15,6 @@ use crate::{
     texture::Textures,
     utils::{Direction, Owner, P1},
 };
-use bevy::{math::const_vec3, prelude::*, sprite::collide_aabb};
 
 pub const DIRECTION_KEYS: [KeyCode; 4] = [KeyCode::W, KeyCode::D, KeyCode::S, KeyCode::A];
 pub const SPAWN_POSITION: Vec3 = const_vec3!([
@@ -86,6 +88,7 @@ pub fn movement(
     keyboard_input: Res<Input<KeyCode>>,
     textures: Res<Textures>,
     texture_atlas: Res<Assets<TextureAtlas>>,
+    mut game_data: ResMut<GameData>,
     mut tank: Query<
         (
             Entity,
@@ -217,8 +220,8 @@ pub fn movement(
                                 };
                             }
                             PowerType::Tank => {
-                                if tank.life < 99 {
-                                    tank.life += 1;
+                                if game_data.p1 < 100 {
+                                    game_data.p1 += 1;
                                 }
                             }
                             PowerType::Clock => (), // TODO: freeze all ai tanks on battle field
