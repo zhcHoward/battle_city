@@ -1,11 +1,11 @@
 use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    state,
     texture::SpriteIndex,
 };
 use bevy::{math::const_vec2, prelude::*};
 
-const SIZE: Vec2 = const_vec2!([HALF_BLOCK_WIDTH, HALF_BLOCK_WIDTH]);
 #[derive(Component)]
 pub struct Iron;
 
@@ -34,7 +34,8 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Collider::Iron);
+                .insert(Collider::Iron)
+                .insert(state::State::Iron);
         }
         IronType::Iron => {
             commands
@@ -53,7 +54,8 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Collider::Iron);
+                .insert(Collider::Iron)
+                .insert(state::State::Iron);
             commands
                 .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
@@ -70,7 +72,8 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Collider::Iron);
+                .insert(Collider::Iron)
+                .insert(state::State::Iron);
             commands
                 .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
@@ -87,7 +90,8 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Collider::Iron);
+                .insert(Collider::Iron)
+                .insert(state::State::Iron);
             commands
                 .spawn_bundle(SpriteSheetBundle {
                     sprite: TextureAtlasSprite::new(SpriteIndex::IRON[0]),
@@ -104,7 +108,8 @@ pub fn spawn(
                     ..Default::default()
                 })
                 .insert(Iron)
-                .insert(Collider::Iron);
+                .insert(Collider::Iron)
+                .insert(state::State::Iron);
         }
     }
 }

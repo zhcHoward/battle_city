@@ -110,8 +110,6 @@ pub fn collision(
         &state::State,
         Option<&Sprite>,
         Option<&TextureAtlasSprite>,
-        // Option<&Size>,
-        // Option<&Brick>,
     )>,
 ) {
     let mut size;
@@ -132,6 +130,7 @@ pub fn collision(
                     sprite.size()
                 }
             };
+            println!("state: {:?}, size: {}", c_state, size);
             let collision = collide(
                 b_transform.translation,
                 BULLET_SIZE,

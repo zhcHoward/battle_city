@@ -1,6 +1,7 @@
 use crate::{
     collision::Collider,
     consts::{HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, SCALE},
+    state,
     texture::SpriteIndex,
 };
 use bevy::{math::const_vec2, prelude::*};
@@ -29,7 +30,8 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         })
         .insert(River)
         .insert(Collider::River)
-        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true))
+        .insert(state::State::River);
     commands
         .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
@@ -47,7 +49,8 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         })
         .insert(River)
         .insert(Collider::River)
-        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true))
+        .insert(state::State::River);
     commands
         .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
@@ -65,7 +68,8 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         })
         .insert(River)
         .insert(Collider::River)
-        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true))
+        .insert(state::State::River);
     commands
         .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(SpriteIndex::RIVER[1]),
@@ -83,7 +87,8 @@ pub fn spawn(commands: &mut Commands, position: Vec3, texture: Handle<TextureAtl
         })
         .insert(River)
         .insert(Collider::River)
-        .insert(Timer::from_seconds(TIMER_INTERVAL, true));
+        .insert(Timer::from_seconds(TIMER_INTERVAL, true))
+        .insert(state::State::River);
 }
 
 pub fn wave(time: Res<Time>, mut query: Query<(&mut TextureAtlasSprite, &mut Timer), With<River>>) {
