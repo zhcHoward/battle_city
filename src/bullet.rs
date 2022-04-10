@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use bevy::{
     math::const_vec2,
     prelude::*,
@@ -114,6 +116,7 @@ pub fn collision(
 ) {
     let mut size;
     let texture = &textures.texture;
+    let mut bullets_to_despawn = HashSet::new();
     for (b_entity, b_transform, b_state) in bullets.iter() {
         for (c_entity, collider, c_transform, c_state, sprite, atlas_sprite) in colliders.iter() {
             if b_entity == c_entity {
@@ -147,7 +150,7 @@ pub fn collision(
                     // TODO: tanks with enough power ups can remove grass, e.g. 4 stars
                 }
                 Collider::Brick => {
-                    commands.entity(b_entity).despawn();
+                    bullets_to_despawn.insert(b_entity);
                     commands.entity(c_entity).despawn();
                     // TO FIX: explosion will be spawned twice if bullet hit the middle of a Brick (hit 2 QuarteBrick in a single frame)
                     explosion::spawn(
@@ -249,7 +252,7 @@ pub fn collision(
                     }
                 }
                 Collider::Iron => {
-                    commands.entity(b_entity).despawn();
+                    bullets_to_despawn.insert(b_entity);
                     explosion::spawn(
                         &mut commands,
                         texture.clone(),
@@ -259,7 +262,7 @@ pub fn collision(
                     // TODO: destroy Iron if tank has enough power
                 }
                 Collider::Boundary => {
-                    commands.entity(b_entity).despawn();
+                    bullets_to_despawn.insert(b_entity);
                     let pos = match b_state.as_bullet().direction {
                         Direction::Up => {
                             Vec3::new(b_transform.translation.x, BATTLE_FIELD_WIDTH / 2., 0.)
@@ -277,7 +280,7 @@ pub fn collision(
                     explosion::spawn(&mut commands, texture.clone(), pos, false);
                 }
                 Collider::Base => {
-                    commands.entity(b_entity).despawn();
+                    bullets_to_despawn.insert(b_entity);
                     commands.entity(c_entity).despawn();
                     explosion::spawn(
                         &mut commands,
@@ -299,8 +302,8 @@ pub fn collision(
                     if c_bullet.source == bullet.source {
                         continue;
                     }
-                    commands.entity(b_entity).despawn();
-                    commands.entity(c_entity).despawn();
+                    bullets_to_despawn.insert(b_entity);
+                    bullets_to_despawn.insert(c_entity);
                 }
                 Collider::Tank => {
                     let tank = c_state.as_tank();
@@ -309,11 +312,11 @@ pub fn collision(
                         Owner::P1 => match tank.owner {
                             Owner::P1 => continue,
                             Owner::P2 => {
-                                commands.entity(b_entity).despawn();
+                                bullets_to_despawn.insert(b_entity);
                                 // TODO: freeze P2 for some seconds
                             }
                             Owner::AI => {
-                                commands.entity(b_entity).despawn();
+                                bullets_to_despawn.insert(b_entity);
                                 commands.entity(c_entity).despawn();
                                 explosion::spawn(
                                     &mut commands,
@@ -325,12 +328,12 @@ pub fn collision(
                         },
                         Owner::P2 => match tank.owner {
                             Owner::P1 => {
-                                commands.entity(b_entity).despawn();
+                                bullets_to_despawn.insert(b_entity);
                                 // TODO: freeze P1 for some seconds
                             }
                             Owner::P2 => continue,
                             Owner::AI => {
-                                commands.entity(b_entity).despawn();
+                                bullets_to_despawn.insert(b_entity);
                                 commands.entity(c_entity).despawn();
                                 explosion::spawn(
                                     &mut commands,
@@ -342,7 +345,7 @@ pub fn collision(
                         },
                         Owner::AI => match tank.owner {
                             Owner::P1 | Owner::P2 => {
-                                commands.entity(b_entity).despawn();
+                                bullets_to_despawn.insert(b_entity);
                                 // TODO: destroy players' tank
                             }
                             Owner::AI => continue,
@@ -351,5 +354,8 @@ pub fn collision(
                 }
             }
         }
+    }
+    for bullet in bullets_to_despawn {
+        commands.entity(bullet).despawn();
     }
 }
