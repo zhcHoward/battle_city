@@ -1,5 +1,5 @@
 use crate::{
-    consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH},
+    consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH},
     utils::{Direction, Owner},
 };
 use bevy::{
@@ -74,10 +74,10 @@ pub fn cal_position(tank_pos: Vec3, new_direction: Direction) -> f32 {
             }
         }
     };
-    let mut n = (distance / HALF_BLOCK_WIDTH) as i32;
-    let left = distance % HALF_BLOCK_WIDTH;
-    if left > MIN_BLOCK_WIDTH {
+    let mut n = (distance / MIN_BLOCK_WIDTH) as i32;
+    let left = distance % MIN_BLOCK_WIDTH;
+    if left > HALF_MIN_BLOCK_WIDTH {
         n += 1
     }
-    n as f32 * HALF_BLOCK_WIDTH * sign
+    n as f32 * MIN_BLOCK_WIDTH * sign
 }
