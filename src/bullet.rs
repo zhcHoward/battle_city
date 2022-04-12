@@ -17,7 +17,7 @@ use crate::{
     utils::{Direction, Owner, AI, P1, P2},
 };
 
-const BULLET_POS: f32 = 10. * SCALE;
+const BULLET_POS: f32 = 6. * SCALE; // the distance from the center of the tank to the center of bullet
 const BULLET_SPEED: f32 = TANK_SPEED + 1.;
 pub const BULLET_SIZE: Vec2 = const_vec2!([4. * SCALE, 4. * SCALE]);
 
