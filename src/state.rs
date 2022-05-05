@@ -11,7 +11,7 @@ pub enum State {
     Grass,
     Snow,
     Base, // The eagle
-    Tank(tank::State),
+    Tank(tank::Data),
     Bullet(bullet::State),
     PowerUp(power_up::PowerType),
 }
@@ -31,14 +31,14 @@ impl State {
         }
     }
 
-    pub fn as_tank(&self) -> &tank::State {
+    pub fn as_tank(&self) -> &tank::Data {
         match self {
             State::Tank(state) => state,
             _ => unreachable!(),
         }
     }
 
-    pub fn as_mut_tank(&mut self) -> &mut tank::State {
+    pub fn as_mut_tank(&mut self) -> &mut tank::Data {
         match self {
             State::Tank(state) => state,
             _ => unreachable!(),

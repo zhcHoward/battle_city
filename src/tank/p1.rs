@@ -10,7 +10,7 @@ use crate::{
     power_up::PowerType,
     shield, star, state,
     tank::{
-        cal_position, AnimationTimer, MovementTimer, State, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED,
+        cal_position, AnimationTimer, MovementTimer, Data, Tank, MAX_LEVEL, TANK_SIZE, TANK_SPEED,
     },
     texture::Textures,
     utils::{Direction, Owner, P1},
@@ -23,13 +23,8 @@ pub const SPAWN_POSITION: Vec3 = const_vec3!([
     0.
 ]);
 
-/// actually spawns a star
-pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
-    star::spawn(commands, texture, SPAWN_POSITION, Owner::P1, None);
-}
-
 /// the real function that spawns a tank after star is despawned
-pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
+pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
     commands
         .spawn_bundle(SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(0),
@@ -46,7 +41,7 @@ pub fn _spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
         .insert(Collider::Tank)
         .insert(MovementTimer(Timer::from_seconds(0.01, true)))
         .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
-        .insert(state::State::Tank(State::default()));
+        .insert(state::State::Tank(Data::default()));
 }
 
 /// Animation systems

@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 use crate::{
     ai,
-    ai::TankType,
     consts::SCALE,
     p1, p2,
     texture::{SpriteIndex, Textures},
@@ -17,10 +16,10 @@ pub enum State {
 
 #[derive(Component)]
 pub struct Star {
-    owner: Owner,
-    tank_type: Option<TankType>,
-    done: bool,
-    state: State,
+    owner: Owner,   // tank's owner
+    level: u8,      // tank's level
+    done: bool,     // if star has finish twinkling
+    state: State,   // if star is shrinking or enlarging
 }
 
 pub fn spawn(
@@ -28,7 +27,7 @@ pub fn spawn(
     texture: Handle<TextureAtlas>,
     position: Vec3,
     owner: Owner,
-    tank_type: Option<TankType>,
+    level: u8,
 ) {
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -44,7 +43,7 @@ pub fn spawn(
         .insert(Star {
             owner,
             done: false,
-            tank_type,
+            level,
             state: State::Enlarge,
         })
         .insert(Timer::from_seconds(0.1, true));
@@ -75,13 +74,13 @@ pub fn twinkling(
                     true => {
                         commands.entity(entity).despawn();
                         match star.owner {
-                            Owner::P1 => p1::_spawn(&mut commands, textures.texture.clone()),
+                            Owner::P1 => p1::spawn(&mut commands, textures.texture.clone()),
                             Owner::P2 => p2::spawn(&mut commands, textures.texture.clone()),
-                            Owner::AI => ai::_spawn(
+                            Owner::AI => ai::spawn(
                                 &mut commands,
                                 textures.texture.clone(),
                                 transform.translation,
-                                star.tank_type.unwrap(),
+                                star.level,
                             ),
                         }
                     }

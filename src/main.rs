@@ -79,31 +79,10 @@ fn setup(
 fn spawn_tank(mut commands: Commands, textures: Res<Textures>) {
     let texture = &textures.texture;
     p1::spawn(&mut commands, texture.clone());
-    star::spawn(
-        &mut commands,
-        textures.texture.clone(),
-        p2::SPAWN_POSITION,
-        utils::Owner::P2,
-        None,
-    );
-    ai::spawn(
-        &mut commands,
-        texture.clone(),
-        ai::SPAWN_POSITION1,
-        ai::TankType::Light,
-    );
-    ai::spawn(
-        &mut commands,
-        texture.clone(),
-        ai::SPAWN_POSITION2,
-        ai::TankType::Medium,
-    );
-    ai::spawn(
-        &mut commands,
-        texture.clone(),
-        ai::SPAWN_POSITION3,
-        ai::TankType::Heavy,
-    );
+    tank::spawn(&mut commands, texture.clone(), p2::SPAWN_POSITION, utils::Owner::P2, 0);
+    tank::spawn(&mut commands, texture.clone(), ai::SPAWN_POSITION1, utils::Owner::AI, 1);
+    tank::spawn(&mut commands, texture.clone(), ai::SPAWN_POSITION2, utils::Owner::AI, 2);
+    tank::spawn(&mut commands, texture.clone(), ai::SPAWN_POSITION3, utils::Owner::AI, 3);
 }
 
 fn spawn_terrian(mut commands: Commands, textures: Res<Textures>) {

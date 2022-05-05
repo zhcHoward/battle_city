@@ -1,11 +1,12 @@
+use bevy::{math::const_vec3, prelude::*};
+
 use crate::{
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
     state,
-    tank::{State, Tank, TANK_SIZE, TANK_SPEED},
+    tank::{Data, Tank, TANK_SIZE, TANK_SPEED},
     utils::{Direction, Owner, P2},
 };
-use bevy::{math::const_vec3, prelude::*};
 
 pub const DIRECTION_KEYS: [KeyCode; 4] =
     [KeyCode::Up, KeyCode::Right, KeyCode::Down, KeyCode::Left];
@@ -31,7 +32,7 @@ pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>) {
         .insert(P2)
         .insert(Collider::Tank)
         .insert(Timer::from_seconds(0.1, true))
-        .insert(state::State::Tank(State {
+        .insert(state::State::Tank(Data {
             owner: Owner::P2,
             base_sprite: 128,
             ..Default::default()

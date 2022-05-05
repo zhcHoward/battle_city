@@ -1,11 +1,13 @@
+use bevy::{math::const_vec3, prelude::*};
+
 use crate::{
     collision::{collide, Collider},
     consts::{BATTLE_FIELD_WIDTH, BLOCK_WIDTH, SCALE},
-    star, state,
-    tank::{State, Tank, TANK_SIZE, TANK_SPEED},
+    state,
+    tank::{Data, Tank, TANK_SIZE, TANK_SPEED},
     utils::{Direction, Owner},
 };
-use bevy::{math::const_vec3, prelude::*};
+
 
 pub const SPAWN_POSITION1: Vec3 = const_vec3!([
     -BATTLE_FIELD_WIDTH / 2.,
@@ -23,34 +25,17 @@ pub const SPAWN_POSITION3: Vec3 = const_vec3!([
     0.
 ]);
 
-#[derive(Debug, Clone, Copy, Component)]
-pub enum TankType {
-    Normal,
-    Light,
-    Medium,
-    Heavy,
-}
-
 pub fn spawn(
     commands: &mut Commands,
     texture: Handle<TextureAtlas>,
     position: Vec3,
-    tank_type: TankType,
+    level: u8,
 ) {
-    star::spawn(commands, texture, position, Owner::AI, Some(tank_type));
-}
-
-pub fn _spawn(
-    commands: &mut Commands,
-    texture: Handle<TextureAtlas>,
-    position: Vec3,
-    tank_type: TankType,
-) {
-    let index = match tank_type {
-        TankType::Normal => 72,
-        TankType::Light => 88,
-        TankType::Medium => 104,
-        TankType::Heavy => 120,
+    let index = match level {
+        0 => 72,
+        1 => 88,
+        2 => 104,
+        _ => 120,
     };
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -64,12 +49,12 @@ pub fn _spawn(
             ..Default::default()
         })
         .insert(Tank)
-        .insert(tank_type)
         .insert(Collider::Tank)
         .insert(Timer::from_seconds(0.1, true))
-        .insert(state::State::Tank(State {
+        .insert(state::State::Tank(Data {
             owner: Owner::AI,
             base_sprite: index,
+            level,
             ..Default::default()
         }));
 }

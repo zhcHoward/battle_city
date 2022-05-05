@@ -1,11 +1,14 @@
-use crate::{
-    consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH},
-    utils::{Direction, Owner},
-};
 use bevy::{
     core::Timer,
     math::{const_vec2, Vec2, Vec3},
     prelude::Component,
+    prelude::*,
+};
+
+use crate::{
+    consts::{BLOCK_WIDTH, HALF_BLOCK_WIDTH, MIN_BLOCK_WIDTH, HALF_MIN_BLOCK_WIDTH},
+    utils::{Direction, Owner},
+    star,
 };
 
 pub mod ai;
@@ -16,7 +19,7 @@ pub mod p2;
 pub struct Tank;
 
 #[derive(Debug)]
-pub struct State {
+pub struct Data {
     pub direction: Direction,
     pub owner: Owner,
     pub level: u8,
@@ -25,17 +28,18 @@ pub struct State {
     pub base_sprite: usize,
 }
 
-impl State {
-    pub fn new(direction: Direction, owner: Owner) -> Self {
+impl Data {
+    pub fn new(direction: Direction, owner: Owner, level: u8) -> Self {
         Self {
             direction,
             owner,
+            level,
             ..Default::default()
         }
     }
 }
 
-impl Default for State {
+impl Default for Data {
     fn default() -> Self {
         Self {
             direction: Direction::Up,
@@ -80,4 +84,10 @@ pub fn cal_position(tank_pos: Vec3, new_direction: Direction) -> f32 {
         n += 1
     }
     n as f32 * MIN_BLOCK_WIDTH * sign
+}
+
+
+// Actually, this spawn spawns a star. After start finishes twikling, a tank will be spawned.
+pub fn spawn(commands: &mut Commands, texture: Handle<TextureAtlas>, position: Vec3, owner: Owner, level: u8) {
+    star::spawn(commands, texture, position, owner, level);
 }
