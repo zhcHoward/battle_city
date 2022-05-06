@@ -8,7 +8,7 @@ use crate::{
     state,
     tank::{AnimationTimer, Data, MovementTimer, Tank, TANK_SIZE, TANK_SPEED},
     texture::{SpriteIndex, Textures},
-    utils::{Direction, Owner, AI},
+    utils::{get_sprite, Direction, Owner, AI},
 };
 
 pub const SPAWN_POSITION1: Vec3 = const_vec3!([
@@ -98,6 +98,7 @@ pub fn movement(
                 &mut Transform,
                 &mut MovementTimer,
                 &mut state::State,
+                &mut TextureAtlasSprite,
             ),
             (With<AI>, With<Tank>),
         >,
@@ -132,7 +133,7 @@ pub fn movement(
             )
         })
         .collect::<Vec<_>>();
-    for (t_entity, mut t_transform, mut timer, mut state) in set.q0().iter_mut() {
+    for (t_entity, mut t_transform, mut timer, mut state, mut sprite) in set.q0().iter_mut() {
         if !timer.0.tick(time.delta()).just_finished() {
             continue;
         }
@@ -145,28 +146,42 @@ pub fn movement(
                 continue;
             }
 
-            if decision.action == Action::MoveForward {
-                match collide(
-                    t_transform.translation,
-                    TANK_SIZE,
-                    *o_translation,
-                    *o_size,
-                    &tank.direction,
-                ) {
-                    None => continue,
-                    Some(distance) => {
-                        if distance < min_distance {
-                            min_distance = distance;
+            match decision.action {
+                Action::MoveForward => {
+                    match collide(
+                        t_transform.translation,
+                        TANK_SIZE,
+                        *o_translation,
+                        *o_size,
+                        &tank.direction,
+                    ) {
+                        None => continue,
+                        Some(distance) => {
+                            if distance < min_distance {
+                                min_distance = distance;
+                            }
                         }
                     }
-                }
 
-                let move_distance = min_distance.min(TANK_SPEED);
-                match tank.direction {
-                    Direction::Up => t_transform.translation.y += move_distance,
-                    Direction::Down => t_transform.translation.y -= move_distance,
-                    Direction::Left => t_transform.translation.x -= move_distance,
-                    Direction::Right => t_transform.translation.x += move_distance,
+                    let move_distance = min_distance.min(TANK_SPEED);
+                    match tank.direction {
+                        Direction::Up => t_transform.translation.y += move_distance,
+                        Direction::Down => t_transform.translation.y -= move_distance,
+                        Direction::Left => t_transform.translation.x -= move_distance,
+                        Direction::Right => t_transform.translation.x += move_distance,
+                    }
+                }
+                Action::TurnLeft => {
+                    tank.direction.turn_left();
+                    sprite.index = get_sprite(tank.owner, tank.level, tank.direction);
+                }
+                Action::TurnRight => {
+                    tank.direction.turn_right();
+                    sprite.index = get_sprite(tank.owner, tank.level, tank.direction);
+                }
+                Action::TurnAround => {
+                    tank.direction.turn_around();
+                    sprite.index = get_sprite(tank.owner, tank.level, tank.direction);
                 }
             }
         }
