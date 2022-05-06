@@ -8,3 +8,4 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.6", features = ["bevy_sprite"] }
+rand = "0.8"

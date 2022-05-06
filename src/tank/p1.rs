@@ -287,7 +287,7 @@ pub fn firing(
         let bullet_pos = bullet::cal_position(&transform.translation, &tank.direction);
         bullet::spawn(
             &mut commands,
-            textures,
+            textures.texture.clone(),
             bullet_pos,
             &tank.direction,
             tank.owner,

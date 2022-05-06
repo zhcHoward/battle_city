@@ -43,7 +43,7 @@ pub fn cal_position(tank_pos: &Vec3, direction: &Direction) -> Vec3 {
 
 pub fn spawn(
     commands: &mut Commands,
-    textures: Res<Textures>,
+    texture: Handle<TextureAtlas>,
     position: Vec3,
     direction: &Direction,
     source: Owner,
@@ -57,7 +57,7 @@ pub fn spawn(
     };
     let mut bullet = commands.spawn_bundle(SpriteSheetBundle {
         sprite: TextureAtlasSprite::new(sprite_index),
-        texture_atlas: textures.texture.clone(),
+        texture_atlas: texture.clone(),
         transform: Transform {
             translation: position,
             scale: Vec3::splat(SCALE),
